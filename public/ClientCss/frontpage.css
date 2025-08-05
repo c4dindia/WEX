@@ -1,0 +1,412 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif  !important;
+}
+:root{
+    --buttonBg-dark-color: #1C545D;
+    --bordered-button-color: #867BF3;
+    --top-sideBar-bgColor: #2A7E8C;
+    --theem-text-color: #1C545D;
+    --progress-color: #1C545D;
+}
+body {
+    overflow: hidden;
+    font-family: "Inter", sans-serif !important;
+    height: 100vh;
+
+}
+
+.nav-item a{
+    color: rgba(255, 255, 255, 0.80);
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.top-bg{
+    background: linear-gradient(180deg, var(--top-sideBar-bgColor) 0%, var(--buttonBg-dark-color) 97%);
+    background-repeat: no-repeat;
+    max-height: 78vh;
+
+}
+
+/* header{
+    display: flex;
+    height: 90px;
+    padding: 0px 10px;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    align-self: stretch;
+} */
+/* .card-login{
+   padding:0 20px;
+} */
+ .card-login{
+    display: flex;
+    justify-content: end;
+    margin-right: 40px;
+ }
+.card-login a{
+   border: none;
+   padding: 10px 16px;
+   border-radius: 5px;
+   background: #FFF;
+   color: var(--buttonBg-dark-color);
+   font-weight: 600;
+   text-decoration: none;
+}
+.front-log-img{
+    padding: 20px;
+}
+.front-log-img img{
+    width: 127px;
+}
+.get-instant-txt{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    color: #FFF;
+    font-family: Inter;
+    font-size: 60px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+}
+.get-instant-para{
+    color: #FFF;
+    text-align: center;
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.grab-your-card{
+    padding:0 20px;
+    text-align: center;
+    margin-top: 20px;
+}
+.grab-your-card a{
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #FFF;
+    color: var(--buttonBg-dark-color);
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    border-radius: 5PX;
+}
+.frame-img{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.frame-img img{
+    width: 45%;
+    position: relative;
+    top: 0px;
+    /* z-index: -100000; */
+}
+.images-container img{
+    padding: 5px;
+    border: 1px solid white;
+    border-radius:10px;
+    height: 55px;
+    border-radius: 10px;
+    border: 1px solid #FFF;
+    background: rgba(255, 255, 255, 0.30);
+    backdrop-filter: blur(25px);
+}
+ul li a:hover{
+    color: #FFF !important;
+}
+.active-nav{
+    color: #fff !important;
+    font-weight: 500;
+    border-bottom: 3px solid #FFF;
+}
+.mid-text{
+    max-width: 45vw;
+}
+.images-container{
+    position: absolute !important;
+    top: 40%;
+    z-index: 1000000 !important;
+    /* border: 1px solid black; */
+    height: 320px;
+    width: 100%;
+    background-color: transparent
+}
+
+/* icons  */
+.left-icon-1{
+    position: relative;
+    right: 50px;
+    height:45px !important;
+    width: 45px;
+}
+.left-icon-2{
+    position: relative;
+    right: 30%;
+    top: 100px;
+}
+.left-icon-3{
+    position: relative;
+    right: 10%;
+    top: 210px;
+    height: 65px !important;
+    width: 65px;
+}
+.right-icon-1{
+    position: relative;
+    left: 90px;
+    bottom: 40px;
+    height: 45px !important;
+    width: 45px;
+}
+.right-icon-2{
+    position: relative;
+    left: 20%;
+    top: 40px;
+}
+.right-icon-3{
+    position: relative;
+    left: 10%;
+    top: 160px;
+    height: 65px  !important;
+    width: 65px;
+}
+/* media query  */
+@media screen and (max-width: 425px) {
+    .top-bg{
+        max-height:244vh !important;
+    }
+    .get-instant-txt{
+        font-size: 24px;
+        margin-bottom: 0;
+    }
+    .get-instant-para{
+       font-size: 12px;
+       width: 100%;
+       margin-bottom: 0;
+    }
+    .front-log-img{
+        text-align: center;
+    }
+    .card-login {
+        display: flex;
+        justify-content: center;
+        margin-right: 0px;
+        margin-top: 20px;
+    }
+    .card-login button{
+        padding: 3px 10px;
+        border-radius: 5PX;
+        text-align: center;
+
+    }
+    .mid-text{
+        max-width: 90vw;
+    }
+    .grab-your-card a {
+        padding: 7px 10px;
+        font-size: 14px;
+        margin-top: -50px;
+        border-radius: 5PX;
+    }
+    .left-icon-1,.left-icon-2,.left-icon-3,.right-icon-1,.right-icon-2{
+        display: none;
+    }
+    .right-icon-3{
+        position: relative;
+        left: 30%;
+        top: 10px;
+        height: 55px !important;
+        width: 55px;
+    }
+  }
+  @media screen and (min-width: 426px) and (max-width: 768px) {
+    .top-bg {
+        max-height: 57vh;
+    }
+    .get-instant-txt{
+        font-size: 35px;
+        margin-bottom: 0;
+    }
+    .get-instant-para{
+       font-size: 16px;
+       width: 100%;
+       margin-bottom: 0;
+    }
+    .front-log-img{
+        text-align: center;
+    }
+    .card-login {
+        text-align: center;
+        margin-top: 20px;
+        width: 100%;
+    }
+    .card-login a{
+        padding: 10px 10px;
+        line-height: 1;
+        font-size: 15px;
+        border-radius: 5PX;
+    }
+    .mid-text{
+        max-width: 90vw;
+    }
+    .grab-your-card a {
+        padding: 7px 10px;
+        font-size: 14px;
+        margin-top: -50px;
+        border-radius: 5PX;
+    }
+    .frame-img img {
+        width: 60%;
+        position: relative;
+        top: 0px;
+    }
+    .left-icon-1{
+        position: relative;
+        bottom: 70px;
+        right: 90px;
+        height:30px  !important;
+        width: 30px;
+    }
+    .left-icon-2{
+        position: relative;
+        right: 60%;
+        top: 0px;
+        height:40px  !important;
+        width: 40px;
+    }
+    .left-icon-3{
+        position: relative;
+        right: 30%;
+        top: 40px;
+        height: 50px !important;
+        width: 50px;
+    }
+    .right-icon-1{
+        position: relative;
+        left: 150px;
+        bottom: 90px;
+        height: 35px !important;
+        width: 35px;
+    }
+    .right-icon-2{
+        position: relative;
+        left: 45%;
+        top: 0px;
+        height: 45px !important;
+        width: 45px;
+
+    }
+    .right-icon-3{
+        position: relative;
+        left: 30%;
+        top: 10px;
+        height: 55px !important;
+        width: 55px;
+    }
+  }
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    .top-bg {
+        max-height: 63vh !important;
+    }
+    .get-instant-txt{
+        font-size: 24px;
+        margin-bottom: 0;
+    }
+    .get-instant-para{
+       font-size: 20px;
+       width: 100%;
+       margin-bottom: 0;
+    }
+    .front-log-img{
+        text-align: center;
+    }
+    .card-login {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .card-login a{
+        padding: 5px 7px;
+    }
+    .card-login button{
+        /* padding: 10px 10px; */
+        line-height: 1;
+        font-size: 15px;
+        border-radius: 5PX;
+    }
+    .mid-text{
+        max-width: 90vw;
+    }
+    .grab-your-card a {
+        padding: 7px 10px;
+        font-size: 14px;
+        margin-top: -50px;
+        border-radius: 5PX;
+
+    }
+    .frame-img img {
+        width: 60%;
+        position: relative;
+        top: 0px;
+    }
+    .left-icon-1{
+        position: relative;
+        bottom: 30px;
+        right: 90px;
+        height:30px  !important;
+        width: 30px;
+    }
+    .left-icon-2{
+        position: relative;
+        right: 50%;
+        top: 30px;
+        height:40px  !important;
+        width: 40px;
+    }
+    .left-icon-3{
+        position: relative;
+        right: 30%;
+        top: 90px;
+        height: 50px !important;
+        width: 50px;
+    }
+    .right-icon-1{
+        position: relative;
+        left: 150px;
+        bottom: 40px;
+        height: 35px !important;
+        width: 35px;
+    }
+    .right-icon-2{
+        position: relative;
+        left: 40%;
+        top: 20px;
+    }
+    .right-icon-3{
+        position: relative;
+        left: 30%;
+        top: 60px;
+        height: 55px !important;
+        width: 55px;
+    }
+  }

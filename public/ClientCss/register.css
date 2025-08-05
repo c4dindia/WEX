@@ -1,0 +1,275 @@
+/* fonts  */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif  ;
+}
+
+body {
+    overflow-x: hidden;
+    font-family: "Inter", sans-serif !important;
+    background-color: var(--body-bg-color);
+    overflow-x: hidden;
+}
+
+/* all colors  */
+:root {
+    --buttonBg-dark-color: #1C545D;
+    --bordered-button-color: #867BF3;
+    --top-sideBar-bgColor: #2A7E8C;
+    --theem-text-color: #1C545D;
+    --progress-color: #1C545D;
+    --icon-bg-color: #B9B5F5;
+    --icon-red-bg-color: #FE9999;
+    --black-color: #000;
+    --white-color: #FFFFFF;
+    --daily-monthly-toggle-bg-color: #DCDAFA;
+    --sideBar-menu-hover-bg-color: #3B34AC;
+    --modal-body-bg-color: #EDECFC;
+    --main-body-bg-color: #EDECFC;
+    --searchBar-bg-color: #F5F5F5;
+    --body-bg-color: #FCFBFE;
+    --modal-body-bg-red: #FFE5E5;
+    --card-freeze-greay-color: #B6B6B6;
+    --icon-freezed-bg-color: #A1A1A1;
+    --input-checked-color: #5a67d8;
+    --active-color: #00C008;
+    --amount-postive-color: #00C008;
+    --amount-negative-color: #CD1F1F;
+    --sideBar-menue-icon-color: #434343;
+    --top-SideBar-rounded-letter-bg: #FFBE00;
+    --atm-card-bg-color: #5E56E5;
+}
+
+/* uttility class  */
+
+a {
+    text-decoration: none;
+    color: var(--black-color);
+}
+
+ul li {
+    list-style: none;
+}
+.text-white-color{
+    color: #FFF;
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+}
+input,select{
+    display: flex;
+    height: 50px;
+    padding: 0px 16px;
+    align-items: center;
+    align-self: stretch;
+    border-radius: 8px;
+    border: 1px solid #D9D9D9;
+    background: #FFF;
+}
+label{
+    color: #1A1A1A !important;
+    font-family: Inter !important;
+    font-size: 16px !important;
+    font-style: normal;
+    font-weight: 500 !important;
+    line-height: normal;
+}
+
+
+.btn-outline-secondary:hover{
+    background-color: var(--buttonBg-dark-color);
+    color: var(--white-color);
+    border:1px solid var(--theem-text-color);
+}
+
+/* page css  */
+/* left side css  */
+.left-side-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 90px;
+    position: relative;
+    top: 15%;
+}
+.login-logo img{
+    width: 21%;
+    z-index: 10000;
+}
+.login-logo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center ;
+    gap: 5px;
+}
+.login-logo span{
+    color: rgba(255, 255, 255, 0.50);
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.login-card img{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 250px;
+    width: 400px;
+    filter:drop-shadow(-11px 10px 33px rgba(0, 0, 0, 0.05)) drop-shadow(-46px 38px 59px rgba(0, 0, 0, 0.04)) drop-shadow(-102px 86px 80px rgba(0, 0, 0, 0.03)) drop-shadow(-182px 153px 95px rgba(0, 0, 0, 0.01)) drop-shadow(-284px 239px 104px rgba(0, 0, 0, 0.00));
+}
+
+.login-left-side-bg {
+    background: rgb(118,105,242);
+    background: linear-gradient(180deg, var(--top-sideBar-bgColor) 0%, var(--buttonBg-dark-color) 97%);
+    height: 100vh;
+}
+
+/* right section  */
+.right-side-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: 5%;
+    padding:0 50px;
+}
+.registraion-txt{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.registraion-txt h3{
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    font-size: 24px;
+    padding: 40px 16px;
+}
+/* .form-container {
+    max-width: 500px;
+    margin: 50px auto;
+} */
+
+.progress-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.progress-step {
+    width: 15%;
+    height: 5px;
+    background-color: #e0e0e0;
+    margin: 0 5px;
+    border-radius: 5px;
+}
+
+.progress-step.active {
+    background-color: var(--buttonBg-dark-color);
+}
+
+
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-link a {
+    color: var(--buttonBg-dark-color);
+    text-decoration: none;
+}
+.login-here{
+    font-weight: 700;
+    text-decoration: underline !important;
+}
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Hide other steps initially */
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+}
+.btn-continue {
+    background: rgb(118,105,242) !important;
+    background: linear-gradient(180deg, var(--top-sideBar-bgColor) 0%, var(--buttonBg-dark-color) 97%) !important;
+    color: var(--white-color) !important;
+}
+
+/* for toggle  */
+/* .toggle-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+} */
+
+.toggle-btn {
+    width: 80%;
+    /* width: 183px; */
+    border-radius: 5px;
+    margin: 0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    outline: none;
+}
+
+.toggle-btn.active {
+    background-color: #D2DDDF;
+    color: var(--buttonBg-dark-color);
+    border-color: var(--buttonBg-dark-color);
+    outline: none;
+}
+
+.toggle-btn:not(.active) {
+    background-color: white;
+    color: var(--buttonBg-dark-color);
+}
+
+.toggle-wrapper {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: inline-flex;
+    padding:1px;
+    width: 100%;
+}
+.toggle-wrapper input{
+    padding: 5px 10px;
+    border: none;
+    text-align: center;
+}
+
+.form-height{
+    min-height: 60vh;
+}
+.btn-back{
+    background-color: var(--black-color) !important;
+    color: var(--white-color) !important;
+}
+.step-wise-text{
+    font-weight: 700;
+    color: var(--theem-text-color);
+}
+
+/* .toggle-wrapper .form-check label{
+    padding: 5px 30px;
+    border: none;
+} */
