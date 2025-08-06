@@ -87,15 +87,10 @@ Route::group(['middleware' => ['auth', 'check.client.status']], function () {
     Route::get('/card/{id}/payments', [CardController::class, 'showSpecificCardPayments'])->name('showSpecificCardPayments'); //for specific card payments
     Route::post('time-records-card-transaction/{id}', [CardController::class, 'timeRecordsCardTransaction'])->name('timeRecordsCardTransaction');
     Route::post('/save-cards', [CardController::class, 'saveCards'])->name('saveCards');
+    Route::post('/import-cards',[CardController::class,'importCards'])->name('importCards');
 
-    //Freeze , Unfreeze , Close Cards , 3ds Settings , card limits
-    Route::get('/close-card/{id}', [CardController::class, 'closeCard'])->name('closeCard');  //for closing wallester card
-    Route::get('/freeze-card/{id}', [CardController::class, 'freezeCard'])->name('freezeCard'); //for freezing wallester card
-    Route::get('/unblock-card/{id}', [CardController::class, 'unblockCard'])->name('unblockCard'); //for unblocking card
-
-    Route::post('/cards/{id}/daily-limits', [CardController::class, 'updateCardDailyLimits'])->name('updateCardDailyLimits');
-    Route::post('/cards/{id}/monthy-limits', [CardController::class, 'updateCardMonthlyLimits'])->name('updateCardMonthlyLimits');
-    Route::post('/update-3ds-settings/{id}', [CardController::class, 'update3dsSettings'])->name('update3dsSettings'); //for updating mobile and password
+    Route::post('/credit-limit/{id}', [CardController::class, 'changeCardLimit'])->name('changeCardLimit');
+    Route::post('/change-cardholder/{id}', [CardController::class, 'changeCardHolder'])->name('changeCardHolder');
 
     //Client Statement Page
     Route::get('/client-statements', [ClientStatementPageController::class, 'showClientStatements'])->name('showClientStatements');

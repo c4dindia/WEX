@@ -52,11 +52,7 @@ $cU_currency_code = '€';
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
         <li class="breadcrumb-item">
-            @if (auth()->user()->is_admin == 3)
-            <a href="{{ route('showCard') }}" style="text-decoration: none; color:black">Expense Cards</a>
-            @elseif (auth()->user()->is_admin == 4)
-            <a href="{{ url('cards') }}/{{ $card->user_id }}" style="text-decoration: none; color:black">Expense Cards</a>
-            @endif
+            <a href="{{ url('cards') }}/{{ $card->id }}" style="text-decoration: none; color:black">Expense Cards</a>
         </li>
         <li class="breadcrumb-item breadcrumb-text-color " aria-current="page"><a href="#" style="text-decoration: none;">Card Details</a></li>
     </ol>
@@ -64,174 +60,38 @@ $cU_currency_code = '€';
 <section>
     <div class="row">
         <div class="col-md-12">
-            <h4 class="dark-text-weight">{{ $card->masked_card_number }} Details</h4>
+            @php
+            $maskedCard = substr($card->card_number, 0, 4)
+            . 'XXXXXXXX'
+            . substr($card->card_number, -4);
+            @endphp
+            <h4 class="dark-text-weight">{{ $maskedCard }} Details</h4>
             <nav id="menu" class="p-0 mt-4">
                 <ul class="d-flex gap-3 p-0 m-0">
                     <li class="tab-1 card-details"><a href="{{ url('/card') }}/{{ $card->card_id }}" class="normal active">CARD DETAILS</a></li>
-                    @if (auth()->user()->is_admin == 3)
-                    <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->card_id }}/payments" class="normal">PAYMENTS</a></li>
-                    @elseif (auth()->user()->is_admin == 4)
-                    <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->card_id }}/payments/{{ $card->user_id }}" class="normal">PAYMENTS</a></li>
-                    @endif
+                    <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->id }}/payments" class="normal">PAYMENTS</a></li>
                 </ul>
                 <hr style="padding: 0; margin: 0;">
             </nav>
 
             <div class="row d-flex gap-5 gap-md-0">
                 <div class="col-md-4 p-3">
-                    <div class="atm-card {{ ($card->card_status != 'ACTIVE') ? 'after-freezcard' : '' }}">
+                    <div class="atm-card {{ ($card->status != '1') ? 'after-freezcard' : '' }}">
                         <div class="atmCard-eye-wrapper">
                             <i class="fa-solid fa-eye"></i>
                         </div>
                         <div class="d-flex gap-3 card-dots">
-                            <div data-real-value="{{ $card['masked_card_number'] }}">•••• •••• •••• ••••</div>
+                            <div data-real-value="{{ $card['card_number'] }}">•••• •••• •••• ••••</div>
                         </div>
                         <div class="card-valid-details">
                             <div>VALID THRU <span>{{ \Carbon\Carbon::parse($card->expiry_date)->format('m/y')}}</span></div>
-                            <div>CVV2 <span class="cvv-dots" data-real-value="123">•••</span> </div>
-                        </div>
-                        {{-- <div class="cardVisa-image">
-                            <img src="{{ asset('ClientCss/images/c4d_card.png') }}" alt="Visa.png">
-                        <div>Business</div>
-                    </div> --}}
-                </div>
-
-            </div>
-            <div class="col-md-12 col-lg-6 mt-5 settingType-icons">
-                <div class="card-clicks d-flex gap-5 align-items-center">
-                    <!--Freeze & Unfreeze Button-->
-                    @if ($card->card_status == "ACTIVE")
-                    <div class="card-icon d-flex flex-column justify-content-center center" data-bs-toggle="modal" data-bs-target="#freezModal">
-                        <i class="fa-solid fa-cloud-showers-heavy"></i>
-                        <p>Freeze Card</p>
-                    </div>
-                    @elseif ($card->card_status == "BLOCKED")
-                    <div class="card-icon d-flex flex-column justify-content-center center" data-bs-toggle="modal" data-bs-target="#freezModal">
-                        <i class="fa-solid after-freezcard-icon fa-sun" style="color: gray;"></i>
-                        <p>Unfreeze Card</p>
-                    </div>
-                    @else
-                    @endif
-
-                    <!-- Freez card (Modal) -->
-                    <div class="modal fade" id="freezModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title fs-5" id="exampleModalLabel" style="color: red;">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> &nbsp;Freeze Card
-                                    </h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body p-5" style="background-color: #ffddd8;">
-                                    <!-- Freeze card details go here -->
-                                    @if ($card->card_status == "ACTIVE")
-                                    Are you sure you want to Freeze this card?
-                                    @elseif ($card->card_status == "BLOCKED")
-                                    Are you sure you want to Unfreeze this card?
-                                    @endif
-                                </div>
-                                <div class="modal-footer">
-                                    @if ($card->card_status == "ACTIVE")
-                                    <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">No, Don't Freeze</button>
-                                    @elseif ($card->card_status == "BLOCKED")
-                                    <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">No, Don't Unfreeze</button>
-                                    @endif
-
-                                    @if ($card->card_status == "ACTIVE")
-                                    <a href="{{url('/freeze-card') }}/{{ $card->card_id }}" class="btn button-bg-yes animate-btn">Freeze Card</a>
-                                    @elseif ($card->card_status == "BLOCKED")
-                                    <a href="{{ url('/unblock-card') }}/{{ $card->card_id }}" class="btn button-bg-yes animate-btn" type="button">Unfreeze Card</a>
-                                    @endif
-                                </div>
-                            </div>
+                            <div>CSC <span class="cvv-dots" data-real-value="123">•••</span> </div>
                         </div>
                     </div>
-
-                    <!-- 3DS SEttING BUTTON--->
-                    @if ($card->card_status == "CLOSED")
-                    <div class="card-icon" data-bs-toggle="modal">
-                        <i class="fa-solid fa-pen-to-square" style="background-color: gray;color: black"></i>
-                        <p>3DS Settings</p>
-                    </div>
-                    @else
-                    <div class="card-icon" data-bs-toggle="modal" data-bs-target="#settingModal">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                        <p>3DS Settings</p>
-                    </div>
-                    @endif
-
-                    <!--3DS Setting (Modal-2) -->
-                    <div class="modal fade modal-lg" id="settingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title fs-5" id="exampleModalLabel" style="color: var( --buttonBg-dark-color);">3DS Settings</h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body px-5 py-4" style="background-color: var(--main-body-bg-color);">
-                                    <form action="{{ url('/update-3ds-settings') }}/{{ $card->card_id }}" method="POST" id="3dsForm">
-                                        @csrf
-                                        
-                                        <div class="mb-3 mt-3 position-relative">
-                                            <label for="passwordInput" class="form-label">3DS Password</label>
-                                            <input type="password" class="form-control" id="passwordInput" name="password" value="{{ $card['3ds_password'] }}" required>
-                                            <span class="input-icon" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="togglePassword()">
-                                                <i id="toggleIcon" class="fa fa-eye"></i>
-                                            </span>
-                                            <span style="font-size: 12px; color: grey;">&nbsp;Allowed Characters: A-Z a-z 0-9 ! " # ; : ? & * ( ) + = / \ , . [ ] { }</span>
-                                            <span id="passwordError" style="color: red !important; font-size: 12px; display: none;">
-                                                <i class="fa-solid fa-triangle-exclamation"></i> &nbsp;Invalid Password
-                                            </span>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" id="submit-button" class="btn button-bg-yes animate-btn">Save changes</button>
-                                </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Close Button -->
-                    @if ($card->card_status == "CLOSED")
-                    <div class="card-icon-close" data-bs-toggle="modal">
-                        <i class="fa-solid fa-xmark" style="background-color: gray"></i>
-                        <p>Card Closed</p>
-                    </div>
-                    @else
-                    <div class="card-icon-close" data-bs-toggle="modal" data-bs-target="#closeCardModal">
-                        <i class="fa-solid fa-xmark"></i>
-                        <p>Close card</p>
-                    </div>
-
-                    <!-- close card (model-3) -->
-                    <div class="modal fade" id="closeCardModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title fs-5" id="exampleModalLabel" style="color: red;">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> &nbsp;Close Card
-                                    </h4>
-                                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body p-5" style="background-color: #ffddd8;">
-                                    Are you sure , you want to close your card ?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">No, Don't Close</button>
-                                    <a href="{{ url('/close-card') }}/{{ $card->card_id }}" class="btn button-bg-yes animate-btn">Yes, Close Card</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
 
                 </div>
             </div>
         </div>
-    </div>
     </div>
     <div class="row ">
         <div class="col-md-6 forDetails-section">
@@ -240,22 +100,53 @@ $cU_currency_code = '€';
                 <table>
                     <tr>
                         <td class="details-data carddetail-headerfont">Card Holder</td>
-                        <td>{{ $card->card_name }}</td>
+                        <td>{{ $card->cardholder_name }} &nbsp; <i class="fa-solid fa-pen-to-square" data-bs-toggle="modal" data-bs-target="#nameEdit" style="cursor: pointer;"></i></td>
                     </tr>
+
+                    <div class="modal fade" id="nameEdit" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Card Name</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" style="background-color: var(--main-body-bg-color);">
+                                    <form action="{{ url('/change-cardholder') }}/{{ $card->id }}" method="POST">
+                                        @csrf
+                                        @php
+                                        $nameParts = explode(' ', $card->cardholder_name, 2);
+                                        @endphp
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput1" class="form-label">First Name:</label>
+                                            <input type="text" class="form-control" id="exampleFormControlInput1" name="firstName" value="{{ $nameParts[0] }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput1" class="form-label">Last Name:</label>
+                                            <input type="text" class="form-control" id="exampleFormControlInput1" name="lastName" value="{{ $nameParts[1] }}" required>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn default-borderd-btn animate-btn" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn button-bg-yes animate-btn">Save changes</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 
                     <tr>
                         <td class="details-data carddetail-headerfont">Account</td>
-                        <td>{{ ucwords(strtolower($card->company_name)) }}</td>
+                        <td>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</td>
                     </tr>
                     <tr>
                         <td class="details-data carddetail-headerfont">Status</td>
                         <td class="indexPage-active">
-                            @if ($card->card_status == 'ACTIVE')
-                            <span class="acc-detail-gbp-h-green">{{ ucwords(strtolower($card->card_status)) }} •</span>
-                            @elseif ($card->card_status == 'BLOCKED')
-                            <span class="acc-detail-gbp-h">{{ ucwords(strtolower($card->card_status)) }} •</span>
-                            @elseif ($card->card_status == 'CLOSED')
-                            <span class="text-secondary">{{ ucwords(strtolower($card->card_status)) }} •</span>
+                            @if ($card->status == '1')
+                            <span class="acc-detail-gbp-h-green">Active •</span>
+                            @else
+                            <span class="text-secondary">Closed •</span>
                             @endif
                         </td>
                     </tr>
@@ -284,7 +175,7 @@ $cU_currency_code = '€';
                                     <tr>
                                         <td class="sen-data-td1 carddetail-headerfont">Card Number</td>
                                         <td class="sen-data-td2">
-                                            <span class="hidden-data" data-visible="false" data-actual="{{ $card['masked_card_number'] }}">•••• •••• •••• ••••</span>
+                                            <span class="hidden-data" data-visible="false" data-actual="{{ $card['card_number'] }}">•••• •••• •••• ••••</span>
                                         </td>
                                         <td>
                                             <i class="fa-solid fa-eye toggle-eye sens-info-icon"></i>&nbsp;&nbsp;
@@ -294,21 +185,9 @@ $cU_currency_code = '€';
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="sen-data-td1 carddetail-headerfont">3DS Password</td>
+                                        <td class="sen-data-td1 carddetail-headerfont">CSC</td>
                                         <td class="sen-data-td2">
-                                            <span class="hidden-data" data-visible="false" data-actual="{{ $card['3ds_password'] }}">••••••••</span>
-                                        </td>
-                                        <td>
-                                            <i class="fa-solid fa-eye toggle-eye sens-info-icon"></i>&nbsp;&nbsp;
-                                        </td>
-                                        <td>
-                                            <i class="fa-regular fa-copy copy-data sens-info-icon"></i>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="sen-data-td1 carddetail-headerfont">CVV2</td>
-                                        <td class="sen-data-td2">
-                                            <span class="hidden-data" data-visible="false" data-actual="123">•••</span>
+                                            <span class="hidden-data" data-visible="false" data-actual="{{ $card['csc'] }}">•••</span>
                                         </td>
                                         <td>
                                             <i class="fa-solid fa-eye toggle-eye sens-info-icon"></i>&nbsp;&nbsp;
@@ -324,381 +203,56 @@ $cU_currency_code = '€';
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="d-flex align-items-center justify-content-between" style="width: 95%;">
-                <div>
-                    <h4 style="font-size: 18px; font-weight: 700;margin-left: 10px;">Limits</h4>
-                </div>
-                <div class="toggle-container">
-                    <button class="toggle-button active" onclick="toggleCards('daily')">Daily</button>
-                    <button class="toggle-button" onclick="toggleCards('monthly')">Monthly</button>
-                </div>
+
+        <div class="col-md-6" style="padding-left: 20rem;">
+            <div class="" style="width: 95%;">
+                <h4 style="font-size: 18px; font-weight: 700; margin-left: 10px;">Limits</h4>
             </div>
 
             <!-- Daily Cards -->
             <div id="daily-cards" class="cards-container">
-                <div class="d-flex">
-                    <!-- daily edit-card-model button-1 (model-1) -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitDaily-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Daily Withdrawal</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->dailyWithdrawal }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width: {{ ( ($limits->dailyWithdrawalAvailable/$limits->dailyWithdrawal)*100 <= 100) ? ($limits->dailyWithdrawalAvailable/$limits->dailyWithdrawal)*100 : 100 }}% !important"></div>
-                        </div>
-                        <div class="progress-text"><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->dailyWithdrawalUsed }})</span> {{ round(($limits->dailyWithdrawalAvailable/$limits->dailyWithdrawal)*100,2) }}%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitDaily-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Daily Purchase</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->dailyPurchase }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width: {{ ($limits->dailyPurchaseAvailable/$limits->dailyPurchase)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text"><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->dailyPurchaseUsed }})</span> {{ round(($limits->dailyPurchaseAvailable/$limits->dailyPurchase)*100, 2) }}%</div>
-                    </div>
-                    <!-- daily edit-card-model (model-1) -->
-                    <div class="modal fade modal-lg mt-5" id="editCardLimitDaily-1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title fs-5" id="exampleModalLabel" style="color: var( --buttonBg-dark-color);">
-                                        <i class="fa-solid fa-pen-to-square"></i> &nbsp;Edit Daily Card Limits
-                                    </h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body" style="background-color: var(--main-body-bg-color);">
-                                    <form method="POST" action="{{ url('/cards')}}/{{ $card->card_id }}/daily-limits">
-                                        @csrf
-                                        <div class="row d-flex align-items-center ">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Withdrawal</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dw" inputmode="numeric" name="limits_daily_withdrawal" value="{{ $limits->dailyWithdrawal }}" max="350" min="0" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Withdrawal</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="text" id="mw" value="{{ $limits->monthlyWithdrawal }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dw" class="text-danger-daily py-2" style="display: none;">*Daily Withdrawal cannot exceed the allowed limit of €350.</span>
-                                        </div>
-                                        <div class="row d-flex align-items-center ">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dp" inputmode="numeric" name="limits_daily_purchase" value="{{ $limits->dailyPurchase }}" min="0" max="10000" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="text" id="mp" value="{{ $limits->monthlyPurchase }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dp" class="text-danger-daily py-2" style="display: none;">*Daily Purchase cannot exceed the allowed limit of €10000.</span>
-                                        </div>
-                                        <div class="row d-flex align-items-center ">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Internet Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dip" inputmode="numeric" name="limits_daily_internet_purchase" value="{{ $limits->dailyInternetPurchase }}" min="0" max="10000" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Internet Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="text" id="mip" value="{{ $limits->monthlyInternetPurchase }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dip" class="text-danger-daily py-2" style="display: none;">*Daily Internet Purchase cannot exceed the allowed limit of €10000.</span>
-                                        </div>
-                                        <div class="row d-flex align-items-center ">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Contactless Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dcp" inputmode="numeric" name="limits_daily_contactless_purchase" value="{{ $limits->dailyContactlessPurchase }}" min="0" max="10000" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Contactless Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="text" id="mcp" value="{{ $limits->monthlyContactlessPurchase }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dcp" class="text-danger-daily py-2" style="display: none;">*Daily Contactless Purchase cannot exceed the allowed limit of €10000.</span>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" id="saveChanges-daily" class="btn button-bg-yes animate-btn disabled">Save</button>
-                                </div>
-                                </form>
-                            </div>
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="icon"><i class="fas fa-credit-card"></i></div>
+                        <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editLimitModal"><i class="fa-solid fa-pen-to-square"></i>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-globe"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal"
-                                data-bs-target="#editCardLimitDaily-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Daily Internet Purchase</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->dailyInternetPurchase }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width: {{ ($limits->dailyInternetPurchaseAvailable/$limits->dailyInternetPurchase)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text "><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->dailyInternetPurchaseUsed }})</span> {{ round(($limits->dailyInternetPurchaseAvailable/$limits->dailyInternetPurchase)*100, 2)   }}%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-barcode"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitDaily-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Daily Contactless Purchase</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->dailyContactlessPurchase }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width: {{ ($limits->dailyContactlessPurchaseAvailable/$limits->dailyContactlessPurchase)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text "><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->dailyContactlessPurchaseUsed }})</span> {{ round(($limits->dailyContactlessPurchaseAvailable/$limits->dailyContactlessPurchase)*100, 2) }}% </div>
+                    <div class="card-content card-horizontal-padding">
+                        <p class="card-name">Credit Limit</p>
+                        <h2 class="fw-bold">${{ round($card->credit_limit) }}</h2>
                     </div>
                 </div>
             </div>
 
-            <!-- Monthly Cards -->
-            <div id="monthly-cards" class="cards-container" style="display: none;">
-                <div class="d-flex">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitMonthly-2">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
+            <div class="modal fade modal-lg mt-5" id="editLimitModal" tabindex="-1" aria-labelledby="editLimitModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title fs-5" id="editLimitModalLabel" style="color: var(--buttonBg-dark-color);">
+                                <i class="fa-solid fa-pen-to-square"></i> &nbsp;Edit Card Limit
+                            </h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Monthly Withdrawal</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->monthlyWithdrawal }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress  card-progress" style="width: {{ ($limits->monthlyWithdrawalAvailable/$limits->monthlyWithdrawal)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text"><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->monthlyWithdrawalUsed }})</span> {{ round(($limits->monthlyWithdrawalAvailable/$limits->monthlyWithdrawal)*100, 2) }}%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitMonthly-2">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Monthly Purchase</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->monthlyPurchase }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width:  {{ ($limits->monthlyPurchaseAvailable/$limits->monthlyPurchase)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text "><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->monthlyPurchaseUsed }})</span> {{ round(($limits->monthlyPurchaseAvailable/$limits->monthlyPurchase)*100, 2) }}%</div>
-                    </div>
-                    <!-- Monthly edit-card-model (model-2) -->
-                    <div class="modal fade modal-lg mt-5" id="editCardLimitMonthly-2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title fs-5" id="exampleModalLabel" style="color: var(--buttonBg-dark-color);">
-                                        <i class="fa-solid fa-pen-to-square"></i> &nbsp;Edit Monthly Card Limits
-                                    </h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <form id="editLimitForm" method="POST" action="{{ url('/credit-limit') }}/{{$card->id}}">
+                            @csrf
+                            <div class="modal-body" style="background-color: var(--main-body-bg-color);">
+                                <div class="col-md-12 my-3">
+                                    <label class="mb-2">&nbsp;Credit Limit</label>
+                                    <div class="d-flex gap-2 align-items-center editInputField">
+                                        <p>$</p>
+                                        <input type="number" name="amount" value="{{ round($card->credit_limit) }}" min="1" class="form-control" required>
+                                    </div>
                                 </div>
-                                <div class="modal-body" style="background-color: var(--main-body-bg-color);">
-                                    <form method="POST" action="{{ url('/cards') }}/{{$card->card_id}}/monthy-limits">
-                                        @csrf
-
-                                        {{-- Monthly Withdrawal --}}
-                                        <div class="row d-flex align-items-center">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Withdrawal</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="mw2" inputmode="numeric" name="limits_monthly_withdrawal"
-                                                        value="{{ $limits->monthlyWithdrawal }}"
-                                                        max="3000"
-                                                        min="350" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Withdrawal</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dw2" value="{{ $limits->dailyWithdrawal }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dw2" class="text-danger-monthly py-2" style="display: none;"></span>
-                                        </div>
-
-                                        {{-- Monthly Purchase --}}
-                                        <div class="row d-flex align-items-center">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="mp2" inputmode="numeric" name="limits_monthly_purchase"
-                                                        value="{{ $limits->monthlyPurchase }}"
-                                                        max="15000"
-                                                        min="10000" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dp2" value="{{ $limits->dailyPurchase }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dp2" class="text-danger-monthly py-2" style="display: none;"></span>
-                                        </div>
-
-                                        {{-- Monthly Internet Purchase --}}
-                                        <div class="row d-flex align-items-center">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Internet Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="mip2" inputmode="numeric" name="limits_monthly_internet_purchase"
-                                                        value="{{ $limits->monthlyInternetPurchase }}"
-                                                        max="15000"
-                                                        min="10000" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Internet Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dip2" value="{{ $limits->dailyInternetPurchase }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dip2" class="text-danger-monthly py-2" style="display: none;"></span>
-                                        </div>
-
-                                        {{-- Monthly Contactless Purchase --}}
-                                        <div class="row d-flex align-items-center">
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Monthly Contactless Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="mcp2" inputmode="numeric" name="limits_monthly_contactless_purchase"
-                                                        value="{{ $limits->monthlyContactlessPurchase }}"
-                                                        max="15000"
-                                                        min="10000" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <label>&nbsp;Daily Contactless Purchase</label>
-                                                <div class="d-flex gap-2 align-items-center editInputField">
-                                                    <p>{{ $cU_currency_code }}</p>
-                                                    <input type="number" id="dcp2" value="{{ $limits->dailyContactlessPurchase }}" readonly>
-                                                </div>
-                                            </div>
-                                            <span id="error-dcp2" class="text-danger-monthly py-2" style="display: none;"></span>
-                                        </div>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" id="saveChanges-monthly" class="btn button-bg-yes animate-btn disabled">Save</button>
-                                </div>
-                                </form>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-globe"></i>
+                            <div class="modal-footer">
+                                <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" id="saveLimitBtn" class="btn button-bg-yes animate-btn">Save</button>
                             </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitMonthly-2">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Monthly Internet Purchase</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->monthlyInternetPurchase }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width: {{ ($limits->monthlyInternetPurchaseAvailable/$limits->monthlyInternetPurchase)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text"><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->monthlyInternetPurchaseUsed }})</span> {{ round(($limits->monthlyInternetPurchaseAvailable/$limits->monthlyInternetPurchase)*100, 2) }}%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="icon">
-                                <i class="fas fa-barcode"></i>
-                            </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editCardLimitMonthly-2">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                        </div>
-                        <div class="card-content card-horizontal-padding">
-                            <p class="card-name">Monthly Contactless Purchase</p>
-                            <h2 class="fw-bold">{{ $cU_currency_code }} {{ $limits->monthlyContactlessPurchase }}</h2>
-                        </div>
-                        <div class="progress-bar progress-bar-card card-horizontal-padding">
-                            <div class="progress card-progress" style="width: {{ ($limits->monthlyContactlessPurchaseAvailable/$limits->monthlyContactlessPurchase)*100 }}% !important;"></div>
-                        </div>
-                        <div class="progress-text"><span>(Amount Used: {{ $cU_currency_code }} {{ $limits->monthlyContactlessPurchaseUsed }})</span> {{ round(($limits->monthlyContactlessPurchaseAvailable/$limits->monthlyContactlessPurchase)*100, 2) }}%</div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 @endsection
@@ -722,28 +276,7 @@ $cU_currency_code = '€';
         }
     }
 </script>
-
-{{-- Validation scripts --}}
 <script>
-    // toggel daily monthly card
-    function toggleCards(selection) {
-        const dailyCards = document.getElementById('daily-cards');
-        const monthlyCards = document.getElementById('monthly-cards');
-        const buttons = document.querySelectorAll('.toggle-button');
-
-        buttons.forEach(button => button.classList.remove('active'));
-
-        if (selection === 'daily') {
-            dailyCards.style.display = 'block';
-            monthlyCards.style.display = 'none';
-            buttons[0].classList.add('active');
-        } else if (selection === 'monthly') {
-            dailyCards.style.display = 'none';
-            monthlyCards.style.display = 'block';
-            buttons[1].classList.add('active');
-        }
-    }
-
     //  for senstive data
     document.querySelectorAll('.toggle-eye').forEach(function(eyeIcon) {
         eyeIcon.addEventListener('click', function() {
@@ -797,197 +330,5 @@ $cU_currency_code = '€';
             cardeyeIcon.classList.toggle("fa-eye-slash");
         });
     });
-
-    // daily edit card input field
-    function getNumericValue(id) {
-        var value = parseFloat(document.getElementById(id).value);
-        return isNaN(value) ? 0 : value;
-    }
-
-    function validateField(inputId, maxId, errorId) {
-        var inputVal = getNumericValue(inputId);
-        var inputElement = document.getElementById(inputId);
-        var maxVal = parseFloat(inputElement.max);
-        var errorElement = document.getElementById(errorId);
-
-        if (inputVal > maxVal) {
-            errorElement.style.display = "inline";
-        } else {
-            errorElement.style.display = "none";
-        }
-
-        checkForErrors();
-    }
-
-    function checkForErrors() {
-        var saveChangeDaily = document.getElementById("saveChanges-daily");
-        var errors = document.querySelectorAll('.text-danger-daily[style="display: inline;"]');
-        if (errors.length > 0) {
-            saveChangeDaily.classList.add("disabled");
-            saveChangeDaily.disabled = true;
-            saveChangeDaily.style.backgroundColor = "gray";
-        } else {
-            saveChangeDaily.classList.remove("disabled");
-            saveChangeDaily.disabled = false;
-            saveChangeDaily.style.backgroundColor = "var( --buttonBg-dark-color)";
-        }
-    }
-
-    function setupEventListeners() {
-        document.getElementById("dw").addEventListener("input", function() {
-            validateField("dw", "dw", "error-dw");
-        });
-        document.getElementById("dp").addEventListener("input", function() {
-            validateField("dp", "dp", "error-dp");
-        });
-        document.getElementById("dip").addEventListener("input", function() {
-            validateField("dip", "dip", "error-dip");
-        });
-        document.getElementById("dcp").addEventListener("input", function() {
-            validateField("dcp", "dcp", "error-dcp");
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", setupEventListeners);
-
-
-    // for monthly edit card
-
-    function getNumericValue(id) {
-        var value = parseFloat(document.getElementById(id).value);
-        return isNaN(value) ? 0 : value;
-    }
-
-    function validateFieldModal2(inputId, maxId, errorId) {
-        const inputElement = document.getElementById(inputId);
-        const inputVal = parseFloat(inputElement.value);
-        const maxVal = parseFloat(inputElement.max);
-        const minVal = parseFloat(inputElement.min);
-        const errorElement = document.getElementById(errorId);
-
-        const labelMap = {
-            mw2: "Monthly Withdrawal",
-            mp2: "Monthly Purchase",
-            mip2: "Monthly Internet Purchase",
-            mcp2: "Monthly Contactless Purchase"
-        };
-        const label = labelMap[inputId] || "This value";
-
-        if (inputVal < minVal) {
-            errorElement.textContent = `*${label} must not be less than allowed limit of €${minVal}.`;
-            errorElement.style.display = "inline";
-        } else if (inputVal > maxVal) {
-            errorElement.textContent = `*${label} cannot exceed the allowed limit of €${maxVal}.`;
-            errorElement.style.display = "inline";
-        } else {
-            errorElement.style.display = "none";
-            errorElement.textContent = "";
-        }
-
-        checkForErrorsModal2();
-    }
-
-    function checkForErrorsModal2() {
-        const saveBtn = document.getElementById("saveChanges-monthly");
-        const errors = document.querySelectorAll('.text-danger-monthly[style="display: inline;"]');
-
-        if (errors.length > 0) {
-            saveBtn.classList.add("disabled");
-            saveBtn.disabled = true;
-            saveBtn.style.backgroundColor = "gray";
-        } else {
-            saveBtn.classList.remove("disabled");
-            saveBtn.disabled = false;
-            saveBtn.style.backgroundColor = "var(--buttonBg-dark-color)";
-        }
-    }
-
-    function setupEventListenersModal2() {
-        document.getElementById("mw2").addEventListener("input", () => {
-            validateFieldModal2("mw2", "mw2", "error-dw2");
-        });
-        document.getElementById("mp2").addEventListener("input", () => {
-            validateFieldModal2("mp2", "mp2", "error-dp2");
-        });
-        document.getElementById("mip2").addEventListener("input", () => {
-            validateFieldModal2("mip2", "mip2", "error-dip2");
-        });
-        document.getElementById("mcp2").addEventListener("input", () => {
-            validateFieldModal2("mcp2", "mcp2", "error-dcp2");
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", setupEventListenersModal2);
-</script>
-
-<script>
-    // Toggle for Email section
-    document.getElementById("emailToggle").addEventListener("change", function() {
-        const emailInput = document.getElementById("emailInput");
-        const smsToggle = document.getElementById("smsToggle"); // Get the SMS toggle
-        const smsInput = document.getElementById("smsInput"); // Get the SMS input
-
-        // Hide or show email input
-        emailInput.hidden = !this.checked;
-        emailInput.value = this.checked ? emailInput.value : '';
-
-        if (this.checked) {
-            // Uncheck SMS toggle and hide the SMS input if Email is checked
-            smsToggle.checked = false;
-            smsInput.hidden = true;
-            smsInput.value = '';
-        }
-
-        checkSubmitButton();
-    });
-
-    // Toggle for SMS section
-    document.getElementById("smsToggle").addEventListener("change", function() {
-        const smsInput = document.getElementById("smsInput");
-        const emailToggle = document.getElementById("emailToggle"); // Get the Email toggle
-        const emailInput = document.getElementById("emailInput"); // Get the Email input
-
-        // Hide or show SMS input
-        smsInput.hidden = !this.checked;
-        smsInput.value = this.checked ? smsInput.value : '';
-
-        if (this.checked) {
-            // Uncheck Email toggle and hide the Email input if SMS is checked
-            emailToggle.checked = false;
-            emailInput.hidden = true;
-            emailInput.value = '';
-        }
-
-        checkSubmitButton();
-    });
-</script>
-
-<script>
-    function checkSubmitButton() {
-        const emailInput = document.getElementById("emailInput").value.trim();
-        const smsInput = document.getElementById("smsInput").value.trim();
-        const passwordInput = document.getElementById("passwordInput");
-        const errorMessage = document.getElementById("passwordError");
-        const submitButton = document.getElementById("submit-button");
-
-        // Check if the password is valid
-        const regex = /^[A-Za-z0-9!"#*;,:?&()+=\/\\.\[\]{}]+$/;
-        const isPasswordValid = regex.test(passwordInput.value);
-
-        // Enable the button if either input has a value and the password is valid
-        submitButton.disabled = !(emailInput || smsInput) || !isPasswordValid;
-
-        // Handle password validation error message
-        if (!isPasswordValid) {
-            errorMessage.textContent = "Password contains invalid characters.";
-            passwordInput.style.hidden;
-        } else {
-            errorMessage.textContent = ""; // Clear error message
-            passwordInput.style.display;
-        }
-    }
-
-    // Add event listener for password input
-    passwordInput.addEventListener("input", checkSubmitButton);
 </script>
 @endsection

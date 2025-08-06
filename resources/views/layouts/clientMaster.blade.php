@@ -234,7 +234,7 @@
     <script>
         Swal.fire({
             icon: 'error',
-            title: '{{ session(' error ') }}',
+            title: '{{ session('error') }}',
             showConfirmButton: true
         }).then((result) => {
             // Flush the session message

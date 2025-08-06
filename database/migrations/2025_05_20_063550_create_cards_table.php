@@ -17,12 +17,14 @@ return new class extends Migration
             $table->string('card_id');
             $table->string('cardholder_name');
             $table->string('card_number');
+            $table->string('credit_limit');
             $table->string('card_type');
             $table->string('expiry_date');
             $table->string('csc');
             $table->string('org_bank_id');
             $table->string('org_name');
             $table->string('org_company_id');
+            $table->string('payment_status');
             $table->integer('status')->default('1');
             $table->timestamps();
         });

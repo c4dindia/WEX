@@ -14,6 +14,7 @@ class Card extends Model
         'card_id',
         'cardholder_name',
         'card_number',
+        'credit_limit',
         'card_type',
         'expiry_date',
         'csc',
