@@ -52,7 +52,7 @@ $cU_currency_code = '€';
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
         <li class="breadcrumb-item">
-            <a href="{{ url('cards') }}/{{ $card->id }}" style="text-decoration: none; color:black">Expense Cards</a>
+            <a href="{{ url('cards') }}" style="text-decoration: none; color:black">Expense Cards</a>
         </li>
         <li class="breadcrumb-item breadcrumb-text-color " aria-current="page"><a href="#" style="text-decoration: none;">Card Details</a></li>
     </ol>
@@ -68,7 +68,7 @@ $cU_currency_code = '€';
             <h4 class="dark-text-weight">{{ $maskedCard }} Details</h4>
             <nav id="menu" class="p-0 mt-4">
                 <ul class="d-flex gap-3 p-0 m-0">
-                    <li class="tab-1 card-details"><a href="{{ url('/card') }}/{{ $card->card_id }}" class="normal active">CARD DETAILS</a></li>
+                    <li class="tab-1 card-details"><a href="{{ url('/card') }}/{{ $card->id }}" class="normal active">CARD DETAILS</a></li>
                     <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->id }}/payments" class="normal">PAYMENTS</a></li>
                 </ul>
                 <hr style="padding: 0; margin: 0;">

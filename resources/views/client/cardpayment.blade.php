@@ -18,18 +18,14 @@ Card Details
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
         <li class="breadcrumb-item">
-            @if (auth()->user()->is_admin == 3)
-            <a href="{{ route('showCard') }}" style="text-decoration: none; color:black">Expense Cards</a>
-            @elseif (auth()->user()->is_admin == 4)
-            <a href="{{ url('cards') }}/{{ $card->user_id }}" style="text-decoration: none; color:black">Expense Cards</a>
-            @endif
+            <a href="{{ url('cards') }}" style="text-decoration: none; color:black">Expense Cards</a>
         </li>
         <li class="breadcrumb-item breadcrumb-text-color " aria-current="page"><a href="#" style="text-decoration: none;">Card Payments</a></li>
     </ol>
 </nav>
 <section>
     @php
-    $cU_currency_code = '€';
+    $cU_currency_code = '$';
     @endphp
 
     <div class="row">
@@ -37,8 +33,8 @@ Card Details
             <h4 class="  dark-text-weight">{{ $card->masked_card_number }} Details</h4>
             <nav id="menu" class="p-0 mt-4 mb-3">
                 <ul class="d-flex gap-3 p-0 m-0">
-                    <li class="tab-1 card-details"><a href="{{ url('/card') }}/{{ $card->card_id }}" class="normal ">CARD DETAILS</a></li>
-                    <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->card_id }}/payments" class="normal active">PAYMENTS</a>
+                    <li class="tab-1 card-details"><a href="{{ url('/card') }}/{{ $card->id }}" class="normal ">CARD DETAILS</a></li>
+                    <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->id }}/payments" class="normal active">PAYMENTS</a>
                     </li>
                 </ul>
                 <hr style="padding: 0; margin: 0;">
@@ -53,7 +49,7 @@ Card Details
                         <p class="mb-0">Select Date:</p>
                     </div>
                     <div class="date-section">
-                        <form action="{{ url('time-records-card-transaction') }}/{{ $card->card_id }}" method="POST">
+                        <form action="{{ url('time-records-card-transaction') }}/{{ $card->id }}" method="POST">
                             @csrf
                             <div class="d-flex gap-2 align-items-center sub-date-section">
                                 <input type="datetime-local" name="start_date" id="" class="acnt-statement-sel-2" value="2024-01-01T00:00:00">
@@ -63,6 +59,9 @@ Card Details
                             </div>
                         </form>
                     </div>
+                </div>
+                <div>
+                    <a href="{{ url('/download-card-statement') }}/{{ $card->id }}" class="generate-btn"><i class="fa-solid fa-circle-arrow-down" aria-hidden="true"></i>&nbsp;Download Card Statement</a>
                 </div>
             </div>
         </div>
@@ -83,12 +82,12 @@ Card Details
                     <tbody style="max-height: 420px;">
                         @if (count($cardStatements) == 0)
                         <tr>
-                            <td colspan="6" class="text-center">No Records </td>
+                            <td colspan="6" class="text-center">No Records found. </td>
                         </tr>
                         @else
                         @foreach ($cardStatements as $cardTransaction)
                         <tr>
-                            <td class="text-center" style="width:10% !important">{{ \Carbon\Carbon::parse($cardTransaction->date)->format('d M Y')}}</td>
+                            <td class="text-center" style="width:10% !important">{{ \Carbon\Carbon::parse($cardTransaction->transaction_date)->format('d M Y')}}</td>
                             <td class="">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="acc-detail-table-img ">
@@ -99,12 +98,12 @@ Card Details
                                         @endif
                                     </div>
                                     <div class="d-flex flex-column align-items-start">
-                                        <h6 class="company-name-table">{{ $card->card_name }}</h6>
+                                        <h6 class="company-name-table">{{ $card->cardholder_name }}</h6>
                                     </div>
                                 </div>
                             </td>
                             <td style="width:25% !important">
-                                {{ Str::title(strtolower(str_replace('_', ' ', $cardTransaction->type))) }}
+                                {{ $cardTransaction->merchant_description }}
                             </td>
                             <td style=" width:25%;">
                                 <div>
@@ -113,14 +112,14 @@ Card Details
                             </td>
                             <td class="text-center" style="width:10% !important">
                                 <div>
-                                    <h6 class="mb-0 acc-detail-gbp-h">{{ $cU_currency_code }} {{ $cardTransaction->amount }}</h6>
+                                    <h6 class="mb-0 acc-detail-gbp-h">{{ $cU_currency_code }}{{ $cardTransaction->billing_amount }}</h6>
                                 </div>
                             </td>
                             <td class=" text-center" style="width:8% !important">
-                                @if ($cardTransaction->transaction_status == 'Success')
-                                <strong class="text-success">{{ $cardTransaction->transaction_status }}</strong>
+                                @if ($cardTransaction->is_credit == 'true')
+                                <strong class="text-success">Complete</strong>
                                 @else
-                                <strong class="default-red-color">{{ $cardTransaction->transaction_status }}</strong>
+                                <strong class="default-red-color">Pending</strong>
                                 @endif
                             </td>
                         </tr>

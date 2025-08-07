@@ -30,18 +30,60 @@ class CardController extends Controller
 
     public function showSpecificCardPayments($id)
     {
+        $card = Card::find($id);
+        $url = 'https://services.encompass-suite.com/api/';
+        $auth = base64_encode("Trinity Resource/webservices:Tr!nity1Res3@");
+        $methodType = "GET";
+        $path = "purchase-logs/v1/" . $card->card_id . '/transactions';
+
+        $client = new \GuzzleHttp\Client();
+        try {
+            $response = $client->request($methodType, $url . $path, [
+                'headers' => [
+                    'Authorization' => 'Basic ' . $auth,
+                    'accept' => 'application/json',
+                    'content-type' => 'application/json',
+                ],
+                'verify' => false
+            ]);
+
+            $result = json_decode($response->getBody()->getContents(), true);
+            $transactions = $result['transactions'];
+
+            foreach ($transactions as $transaction) {
+                CardStatement::updateOrCreate(
+                    [
+                        'card_id' => $card->id,
+                        'transaction_id' => $transaction['id']
+                    ],
+                    [
+                        'user_id' => Auth::user()->id,
+                        'transaction_date' => $transaction['transaction_date'],
+                        'posting_date' => $transaction['posting_date'],
+                        'billing_amount' => $transaction['billing_amount'],
+                        'transaction_type' => $transaction['transaction_type'],
+                        'merchant_description' => $transaction['merchant_description'],
+                        'is_credit' => $transaction['is_credit'],
+                    ]
+                );
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            Log::error($e);
+        }
+
+        $cardStatements = CardStatement::where('card_id', $card->id)->orderBy('transaction_date', 'desc')->get();
 
         return view('client.cardpayment', compact('cardStatements', 'card'));
     }
 
     public function timeRecordsCardTransaction(Request $request, $id)
     {
-        $card = Card::where('card_id', $id)->first();
+        $card = Card::where('id', $id)->first();
 
         $cardStatements = CardStatement::where('card_id', $card->id)
-            ->where('date', '>=', $request->start_date)
-            ->where('date', '<=', $request->end_date)
-            ->orderBy('date', 'desc')
+            ->where('transaction_date', '>=', $request->start_date)
+            ->where('transaction_date', '<=', $request->end_date)
+            ->orderBy('transaction_date', 'desc')
             ->get();
 
         return view('client.cardpayment', compact('cardStatements', 'card'));
@@ -185,5 +227,20 @@ class CardController extends Controller
             return back()->with(['error' => $errorMessage]);
             Log::error($e);
         }
+    }
+
+    public function downloadCardStatement($id)
+    {
+        $transaction = CardStatement::join('cards', 'cards.id', '=', 'card_statements.card_id')->where('card_statements.card_id', $id)->get();
+        $userName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.cardtransaction', [
+            'transactions' => $transaction,
+            'start_date'   => "2025-01-01",
+            'end_date'     => Carbon::today()->toDateString(),
+            'userName'     => $userName
+        ]);
+
+        return $pdf->download('transactions_' . now()->format('Ymd_His') . '.pdf');
     }
 }

@@ -40,7 +40,7 @@ Statements
 @endsection
 
 @php
-$cU_currency_code = '€';
+$cU_currency_code = '$';
 @endphp
 
 
@@ -82,9 +82,9 @@ $cU_currency_code = '€';
                         </form>
                     </div>
                 </div>
-                <!-- <div class="col-md-6 col-lg-5 col-xl-5 d-flex justify-content-lg-start justify-content-xl-end justify-content-md-start">
-                    <a href="{{ url('/client-statements/getAccountStatements') }}/1" class="generate-btn text-uppercase">Generate Account Statement</a>
-                </div> -->
+                <div class="col-md-6 col-lg-5 col-xl-5 d-flex justify-content-lg-start justify-content-xl-end justify-content-md-start">
+                    <a href="{{ route('userDownloadCardStatement') }}" class="generate-btn text-uppercase">Generate Account Statement</a>
+                </div>
             </div>
         </div>
 
@@ -95,22 +95,24 @@ $cU_currency_code = '€';
                     <thead>
                         <tr>
                             <th class="py-3 text-center th-1-w" style="color: #5a5a5a;">Date</th>
-                            <th class="py-3" style="color: #5a5a5a; width: 21%;">Sender/Receiver</th>
-                            <th class="py-3" style="color: #5a5a5a; width: 35%;">Description</th>
+                            <th class="py-3" style="color: #5a5a5a; width: 20%;">Sender/Receiver</th>
+                            <th class="py-3" style="color: #5a5a5a; width: 20%;">Description</th>
+                            <th class="py-3" style="color: #5a5a5a;">Card Number</th>
                             <th class="py-3" style="color: #5a5a5a;">Transaction ID</th>
                             <th class="py-3 text-center" style="color: #5a5a5a; width: 10%;">Amount ({{ $cU_currency_code }})</th>
+                            <th class="py-3 text-center" style="color: #5a5a5a; width: 10%;">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (count($transactions) == 0)
                         <tr>
-                            <td colspan="6" class="text-center">No Records </td>
+                            <td colspan="7" class="text-center">No Records found. </td>
                         </tr>
                         @else
                         @foreach ($transactions as $statement)
                         <tr>
-                            <td class="text-center th-1-w"> {{ \Carbon\Carbon::parse($statement->date)->format('d M Y')}}</td>
-                            <td class="" style="width: 21%;">
+                            <td class="text-center th-1-w"> {{ \Carbon\Carbon::parse($statement->transaction_date)->format('d M Y')}}</td>
+                            <td class="" style="width: 20%;">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="acc-detail-table-img ">
                                         @if ($statement->icon_url != null)
@@ -124,17 +126,21 @@ $cU_currency_code = '€';
                                         @endif
                                     </div>
                                     <div class="d-flex flex-column align-items-start">
-                                        <h6 class="company-name-table truncate-text" title="{{ $statement->source_destination }}">
-                                            {{ $statement->source_destination }}
+                                        <h6 class="company-name-table truncate-text" title="{{ $statement->cardholder_name }}">
+                                            {{ $statement->cardholder_name }}
                                         </h6>
-                                        <p class="acc-detail-table-p mb-0 truncate-text"><small>{{ Str::title(strtolower(str_replace('_', ' ', $statement->type))) }}</small></p>
                                     </div>
                                 </div>
                             </td>
-                            <td style="width: 35%;">
+                            <td style="width: 20%;">
                                 <div>
-                                    <h6 class="acc-table-description-hed">{{ Str::title(strtolower(str_replace('_', ' ', $statement->type))) }}</h6>
-                                    <p class="acc-table-description-p me-2">{{ $statement->description }}</p>
+                                    <h6 class="acc-table-description-hed">{{ $statement->transaction_type }}</h6>
+                                    <p class="acc-table-description-p me-2">{{ $statement->merchant_description }}</p>
+                                </div>
+                            </td>
+                            <td class="">
+                                <div>
+                                    <span class="mb-0">{{ substr($statement->card_number, -4) }}</span>
                                 </div>
                             </td>
                             <td class="" style="">
@@ -144,41 +150,21 @@ $cU_currency_code = '€';
                             </td>
                             <td style="width: 10%;" class="text-center">
                                 <div>
-                                    @if ($statement->credit != null)
-                                    <h6 class="mb-0 acc-detail-gbp-h-green">{{ $cU_currency_code }} {{ $statement->credit }}</h6>
-                                    @else
-                                    <h6 class="mb-0 acc-detail-gbp-h">- {{ $cU_currency_code }} {{ $statement->debit }}</h6>
-                                    @endif
+                                    <h6 class="mb-0 acc-detail-gbp-h-green">{{ $cU_currency_code }}{{ $statement->billing_amount }}</h6>
                                 </div>
+                            </td>
+                            <td class=" text-center">
+                                @if ($statement->is_credit == 'true')
+                                <strong class="text-success">Complete</strong>
+                                @else
+                                <strong class="default-red-color">Pending</strong>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
                         @endif
 
                     </tbody>
-
-                    @if (count($transactions) != 0)
-                    <tfoot>
-                        <tr>
-                            <td></td>
-                            <td class=""></td>
-                            <td class=""></td>
-                            <td class="text-center">Debit Turnover</td>
-                            <td>
-                                <h6 class="mb-0 acc-detail-gbp-h">- {{ $cU_currency_code }} {{ $totalDebit }} </h6>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td class=""></td>
-                            <td class=""></td>
-                            <td class="text-center">Credit Turnover</td>
-                            <td>
-                                <h6 class="mb-0 acc-detail-gbp-h-green"> {{ $cU_currency_code }} {{ $totalCredit }} </h6>
-                            </td>
-                        </tr>
-                    </tfoot>
-                    @endif
                 </table>
             </div>
 

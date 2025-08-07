@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth', 'check.client.status']], function () {
     Route::post('time-records-card-transaction/{id}', [CardController::class, 'timeRecordsCardTransaction'])->name('timeRecordsCardTransaction');
     Route::post('/save-cards', [CardController::class, 'saveCards'])->name('saveCards');
     Route::post('/import-cards',[CardController::class,'importCards'])->name('importCards');
+    Route::get('/download-card-statement/{id}',[CardController::class,'downloadCardStatement']);
 
     Route::post('/credit-limit/{id}', [CardController::class, 'changeCardLimit'])->name('changeCardLimit');
     Route::post('/change-cardholder/{id}', [CardController::class, 'changeCardHolder'])->name('changeCardHolder');
@@ -95,6 +96,7 @@ Route::group(['middleware' => ['auth', 'check.client.status']], function () {
     //Client Statement Page
     Route::get('/client-statements', [ClientStatementPageController::class, 'showClientStatements'])->name('showClientStatements');
     Route::post('/time-records-account-statement', [ClientStatementPageController::class, 'timeRecordsAccountStatement'])->name('timeRecordsAccountStatement');
+    Route::get('/download-card-statement',[ClientStatementPageController::class,'userDownloadCardStatement'])->name('userDownloadCardStatement');
 
     //Client topUpHistory Page
     Route::get('/client-top-up-history', [ClientTopUpHistoryController::class, 'showClientsTopUpHistoryPage'])->name('showClientsTopUpHistoryPage');
