@@ -29,7 +29,7 @@ Top-Up History
 @endsection
 
 @php
-$cU_currency_code = '€';
+$cU_currency_code = '$';
 @endphp
 
 @section('pagecontent')
@@ -43,11 +43,9 @@ $cU_currency_code = '€';
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between pb-2">
-
-
                 <h4 class="dark-text-weight">Top Up History</h4>
                 <div class="d-flex">
-                    <button class="expensecard-import-btn" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-plus"></i> &nbsp;Top Up</button>
+                    <button class="expensecard-import-btn" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled><i class="fa-solid fa-plus"></i> &nbsp;Top Up</button>
 
                     <div class="modal fade" id="exampleModal" tabindex="-1"
                         aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -80,7 +78,7 @@ $cU_currency_code = '€';
                                     </div>
 
                                     <!-- Form for entering custom top-up amount -->
-                                    <form action="{{ route('clientTopUpRequest') }}" method="POST" id="payment-form">
+                                    <form action="#" method="POST" id="payment-form">
                                         @csrf
                                         <input type="text" name="currency_code" value="" hidden>
 
@@ -111,28 +109,11 @@ $cU_currency_code = '€';
                     <tr>
                         <th class="p-3 text-center" style="color: #5a5a5a">Date</th>
                         <th class="p-3" style="color: #5a5a5a">Sender</th>
-                        <th class="p-3 text-center" style="color: #5a5a5a">Amount</th>
+                        <th class="p-3 text-center" style="color: #5a5a5a">Amount {{$cU_currency_code}}</th>
                         <th class="p-3 text-center" style="color: #5a5a5a">Status</th>
                     </tr>
                 </thead>
                 <tbody style="max-height: 600px;">
-                    @foreach ($topUps as $topUp)
-                    <tr>
-                        <td class="text-center">{{ \Carbon\Carbon::parse($topUp->created_at)->format('d M Y')  }}</td>
-                        <td class="fw-bold">{{ $companyName }}</td>
-                        <td class="text-center">{{ $cU_currency_code}} {{ $topUp->amount }}</td>
-
-                        @if ( $topUp->topup_status == 'COMPLETED')
-                        <td class="topUp-completed-color text-center">
-                            {{ Str::ucfirst(Str::lower($topUp->topup_status)) }}
-                        </td>
-                        @else
-                        <td class="default-red-color text-center">
-                            {{ Str::ucfirst(Str::lower($topUp->topup_status)) }}
-                        </td>
-                        @endif
-                    </tr>
-                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -150,31 +131,6 @@ $cU_currency_code = '€';
     document.querySelectorAll('.topup-suggestion').forEach(button => {
         button.addEventListener('click', function() {
             document.getElementById('topup_amount').value = this.getAttribute('data-value');
-        });
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        $.ajax({
-            url: "/kyc-status",
-            type: "GET",
-            success: function(data) {
-                if (data.status !== 'APPROVED') {
-                    Swal.fire({
-                        title: "KYC Verification",
-                        html: "<p>Complete your KYC verification to unlock card creation and management features.</p><p>Click <a href='/kyc-verify' class='text-primary'>here</a> to complete your KYC.</p>",
-                        icon: "info",
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        backdrop: true
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error fetching dashboard data:", error);
-            }
         });
     });
 </script>

@@ -78,24 +78,21 @@ class ClientDashboardController extends Controller
     {
         $query = $request->get('q');
 
-        if (auth()->user()->is_admin == 3) {
-            $results = Card::where('user_id', Auth::user()->id)
-                ->where(function ($q) use ($query) {
-                    $q->where('masked_card_number', 'LIKE', "%{$query}%")
-                        ->orWhere('card_name', 'LIKE', "%{$query}%");
-                })
-                ->select('card_id', 'card_name', 'masked_card_number', 'card_type', 'card_status')
-                ->orderBy('status', 'asc')
-                ->get();
-        } else if (auth()->user()->is_admin == 4) {
-            $results = Card::where(function ($q) use ($query) {
-                $q->where('masked_card_number', 'LIKE', "%{$query}%")
-                    ->orWhere('card_name', 'LIKE', "%{$query}%");
+        $results = Card::where('user_id', Auth::user()->id)
+            ->where(function ($q) use ($query) {
+                $q->where('card_number', 'LIKE', "%{$query}%")
+                    ->orWhere('cardholder_name', 'LIKE', "%{$query}%");
             })
-                ->select('card_id', 'card_name', 'masked_card_number', 'card_type', 'card_status')
-                ->orderBy('status', 'asc')
-                ->get();
-        }
+            ->select('id', 'cardholder_name', 'card_number', 'card_type', 'status')
+            ->orderBy('status', 'asc')
+            ->get()
+            ->map(function ($card) {
+                $card->mask_card_number = substr($card->card_number, 0, 4)
+                    . 'XXXXXXXX'
+                    . substr($card->card_number, -4);
+
+                return $card;
+            });
 
         return response()->json($results);
     }

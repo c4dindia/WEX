@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Imports\CardsImport;
 use App\Models\Card;
-use App\Models\CardLimit;
+use GuzzleHttp\Exception\ClientException;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\CardStatement;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -242,5 +243,24 @@ class CardController extends Controller
         ]);
 
         return $pdf->download('transactions_' . now()->format('Ymd_His') . '.pdf');
+    }
+
+    public function importCards(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx'
+        ]);
+
+        try {
+            Excel::import(new CardsImport, $request->file('file'));
+            return redirect()->back()->with('success', 'Bulk card import successfully.');
+        } catch (ClientException $e) {
+            $errorResponse = json_decode($e->getResponse()->getBody()->getContents(), true);
+            $errorMessage = $errorResponse['errors'][0]['message'] ?? 'Bulk import of cards failed.';
+
+            return redirect()->back()->with('error', $errorMessage);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

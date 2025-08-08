@@ -265,22 +265,21 @@
                             if (data.length) {
                                 suggestions.show();
                                 data.forEach(function(item) {
-                                    // suggestions.append(`<li><a href="{{ url('/cards') }}/${item.card_id}">${item.card_name} ${item.masked_number} ${item.type} ${item.status}</li>`);
                                     suggestions.append(`
                                           <li>
-                                             <a href="{{ url('/card') }}/${item.card_id}" style="text-decoration: none; color: inherit;">
+                                             <a href="{{ url('/card') }}/${item.id}" style="text-decoration: none; color: inherit;">
                                                  <div style="display: flex; justify-content: space-between; align-items: center;">
                                                      <div>
-                                                         <strong>${item.card_name}</strong>
-                                                         <div style="color: gray;">${item.masked_card_number}</div>
+                                                        <strong>${item.cardholder_name}</strong>
+                                                        <div style="color: gray;">${item.mask_card_number}</div>
                                                      </div>
                                                      <div>
-                                                         <strong style=" padding: 4px 8px; border-radius: 20px; color: ${item.card_type === 'VIRTUAL' ? 'black' : '#721c24'};">
-                                                              ${item.card_type.charAt(0).toUpperCase() + item.card_type.slice(1).toLowerCase()} Card
-                                                         </strong>
-                                                         <strong style="margin-left: 8px; background-color: ${item.card_status === 'ACTIVE' ? '#d1e7dd' : '#f8d7da'}; padding: 4px 8px; border-radius: 20px; color: ${item.status === 'Active' ? '#0f5132' : '#721c24'};">
-                                                             ${item.card_status.charAt(0).toUpperCase() + item.card_status.slice(1).toLowerCase()}
-                                                         </strong>
+                                                        <strong style=" padding: 4px 8px; border-radius: 20px; color: ${item.card_type === 'Virtual' ? 'black' : '#721c24'};">
+                                                            ${item.card_type} Card
+                                                        </strong>
+                                                        <strong style="margin-left: 8px; background-color: ${item.status == '1' ? '#d1e7dd' : '#f8d7da'}; padding: 4px 8px; border-radius: 20px; color: ${item.status == '1' ? '#0f5132' : '#721c24'};">
+                                                            ${item.status == '1' ? 'Active' : 'Closed'}
+                                                        </strong>
                                                      </div>
                                                  </div>
                                              </a>

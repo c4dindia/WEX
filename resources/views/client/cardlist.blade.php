@@ -81,8 +81,7 @@ $maxlimits = 100;
                                                 <small class="text-secondary">
                                                     First name => <span class="text-black">string</span> <br>
                                                     Last Name => <span class="text-black">string </span><br>
-                                                    Months Untill Expire => <span class="text-black">Integer (max 36 months)</span><br>
-                                                    Type => <span class="text-black">Virtual or Physical</span><br>
+                                                    Amount => <span class="text-black">Integer</span><br>
                                                 </small>
                                             </span>
                                         </div>

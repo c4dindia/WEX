@@ -100,7 +100,6 @@ Route::group(['middleware' => ['auth', 'check.client.status']], function () {
 
     //Client topUpHistory Page
     Route::get('/client-top-up-history', [ClientTopUpHistoryController::class, 'showClientsTopUpHistoryPage'])->name('showClientsTopUpHistoryPage');
-    Route::post('/client-topup-request', [ClientTopUpHistoryController::class, 'clientTopUpRequest'])->name('clientTopUpRequest');
 
     //Client Create A Card
     Route::post('/client-create-a-card/invite-card-user', [ClientCreateACardController::class, 'clientInviteCardUser'])->name('clientInviteCardUser');
