@@ -17,6 +17,14 @@ class CardsImport implements ToCollection
      * @return \Illuminate\Database\Eloquent\Model|null
      */
 
+    protected $orgName;
+    protected $orgId;
+
+    public function __construct($orgName, $orgId)
+    {
+        $this->orgName = $orgName;
+        $this->orgId = $orgId;
+    }
 
     public function collection(Collection $rows)
     {
@@ -27,25 +35,9 @@ class CardsImport implements ToCollection
         $path = "purchase-logs/v1";
 
         $invoice = rand(100000, 999999);
-        $companies = [
-            'MMDA TR-MC-5551 (0007776)',
-            'MMDA TR-MC-555243 (0007774)',
-            'MMDA TR-MC-555244 (0007777)',
-            'MMDA TR-MC-5569 (0007775)',
-            'MMDA TR-V-4859 (0007778)',
-            'MMDA TR-V-428868 (0008771)',
-            'MMDA TR-V-428869 (0008772)',
-            'MMDA TR-V-428870 (0008773)'
-        ];
 
         foreach ($rows->skip(1) as $row) {
             $client = new \GuzzleHttp\Client();
-            $company = $companies[array_rand($companies)];
-
-            if (preg_match('/^(.+?)\s*\((\d+)\)$/', $company, $matches)) {
-                $organizationName = trim($matches[1]);
-                $companyId = $matches[2];
-            }
 
             try {
                 $response = $client->request($methodType, $url . $path, [
@@ -62,7 +54,7 @@ class CardsImport implements ToCollection
                             'Trinity Resource',
                         ],
                         'org_bank_id' => '0010',
-                        'org_company_id' => (string)$companyId,
+                        'org_company_id' => (string)$this->orgId,
                         'cardholder_first_name' => $row[0] . ' ' . $row[1],
                         'cardholder_address_street_1' => $user->address,
                         'cardholder_address_city' => $user->city,
@@ -85,7 +77,7 @@ class CardsImport implements ToCollection
                     'expiry_date' => $result['virtual_card']['expiration'],
                     'csc' => $result['virtual_card']['security_code'],
                     'org_bank_id' => $result['org_bank_id'],
-                    'org_name' => $organizationName,
+                    'org_name' => $this->orgName,
                     'org_company_id' => $result['org_company_id'],
                     'payment_status' => $result['payment_status']
                 ]);

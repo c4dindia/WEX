@@ -74,6 +74,8 @@ $maxlimits = 100;
                                     <form action="{{ route('importCards') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
 
+                                        <input type="hidden" name="orgId" value="{{ $orgId }}">
+                                        <input type="hidden" name="orgName" value="{{ $bin }}">
                                         <div class="mb-3">
                                             <label for="name" class="form-label">File (Required .xlsx)</label>
                                             <input type="file" class="form-control mb-2" id="file" name="file" required style="background-color: aliceblue;" accept=".xlsx">
@@ -115,6 +117,8 @@ $maxlimits = 100;
                                         <form id="add-card-form" action="{{ route('saveCards') }}" method="POST">
                                             @csrf
 
+                                            <input type="hidden" name="orgId" value="{{ $orgId }}">
+                                            <input type="hidden" name="orgName" value="{{ $bin }}">
                                             <div class="row">
                                                 <div class="col-md-12 d-flex gap-2">
                                                     <div class="form-group mt-3" style="width: 100%;">
@@ -129,21 +133,7 @@ $maxlimits = 100;
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-12 d-flex gap-2">
-                                                    <div class="form-group mt-3" style="width: 100%;">
-                                                        <label for="organization" class="createCard-label">Organization</label><br>
-                                                        <select id="organization" class="form-select" name="organization" required>
-                                                            <option value="" selected disabled>Select Organization</option>
-                                                            <option value="MMDA TR-MC-5551 (0007776)">MMDA TR-MC-5551</option>
-                                                            <option value="MMDA TR-MC-555243 (0007774)">MMDA TR-MC-555243</option>
-                                                            <option value="MMDA TR-MC-555244 (0007777)">MMDA TR-MC-555244</option>
-                                                            <option value="MMDA TR-MC-5569 (0007775)">MMDA TR-MC-5569</option>
-                                                            <option value="MMDA TR-V-4859 (0007778)">MMDA TR-V-4859</option>
-                                                            <option value="MMDA TR-V-428868 (0008771)">MMDA TR-V-428868</option>
-                                                            <option value="MMDA TR-V-428869 (0008772)">MMDA TR-V-428869</option>
-                                                            <option value="MMDA TR-V-428870 (0008773)">MMDA TR-V-428870</option>
-                                                        </select>
-                                                    </div>
+                                                <div class="col-md-6 d-flex gap-2">
                                                     <div class="form-group mt-3" style="width: 100%;">
                                                         <label for="amount" class="createCard-label">Amount ($)</label><br>
                                                         <input type="number" class="form-control" min="1" id="amount" name="amount" placeholder="Enter amount" required>
@@ -228,7 +218,7 @@ $maxlimits = 100;
     document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('submit-btn');
         const form = document.getElementById('add-card-form');
-        const ids = ['firstName', 'lastName', 'amount', 'organization'];
+        const ids = ['firstName', 'lastName', 'amount'];
 
         const check = () => {
             btn.disabled = !ids.every(id => document.getElementById(id)?.value.trim());

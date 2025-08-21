@@ -38,7 +38,7 @@ Create A Card
                         <p class="card-text createCard-para">Physical or Virtual VISA card for simplifying
                             your company’s
                             expenses.</p>
-                        <a href="{{ route('showCard') }}" class="btn button-bg-yes text-uppercase" style="width: 100%;">Create Card</a>
+                        <a href="{{ route('bin') }}" class="btn button-bg-yes text-uppercase" style="width: 100%;">Create Card</a>
                     </div>
                 </div>
             </div>

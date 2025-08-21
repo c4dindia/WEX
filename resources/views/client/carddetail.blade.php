@@ -52,7 +52,7 @@ $cU_currency_code = '€';
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
         <li class="breadcrumb-item">
-            <a href="{{ url('cards') }}" style="text-decoration: none; color:black">Expense Cards</a>
+            <a href="{{ url('cards') }}/{{ $card->org_name }}" style="text-decoration: none; color:black">Expense Cards</a>
         </li>
         <li class="breadcrumb-item breadcrumb-text-color " aria-current="page"><a href="#" style="text-decoration: none;">Card Details</a></li>
     </ol>
@@ -85,7 +85,7 @@ $cU_currency_code = '€';
                         </div>
                         <div class="card-valid-details">
                             <div>VALID THRU <span>{{ \Carbon\Carbon::parse($card->expiry_date)->format('m/y')}}</span></div>
-                            <div>CSC <span class="cvv-dots" data-real-value="123">•••</span> </div>
+                            <div>CSC <span class="cvv-dots" data-real-value="{{ $card['csc'] }}">•••</span> </div>
                         </div>
                     </div>
 

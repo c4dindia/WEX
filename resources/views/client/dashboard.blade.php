@@ -45,7 +45,7 @@ Dashboard
                     <tbody>
                         <tr>
                             <td class="text-center"><a href="{{ route('showClientsAccountsPage') }}" style="color: var(--buttonBg-dark-color)">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</a></td>
-                            <td class="text-center"><a href="{{ route('showCard') }}" style="color: var(--buttonBg-dark-color)">{{ $cardsCount }}</a></td>
+                            <td class="text-center"><a href="{{ route('bin') }}" style="color: var(--buttonBg-dark-color)">{{ $cardsCount }}</a></td>
                             <td class=" text-end"><a href="{{ route('showClientStatements') }}" class="px-4" style="color: black">-</a></td>
                             <td class=" text-end"><a href="{{ route('showClientStatements') }}" class="px-4" style="color: black">
                                     -

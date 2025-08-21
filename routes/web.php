@@ -82,7 +82,8 @@ Route::group(['middleware' => ['auth', 'check.client.status']], function () {
     Route::get('/client-create-a-card', [ClientDashboardController::class, 'showClientCreateACard'])->name('showClientCreateACard');
     Route::get('/search', [ClientDashboardController::class, 'searchBar'])->name('searchBar');
     //Expense cards
-    Route::get('/cards', [CardController::class, 'showCard'])->name('showCard');
+    Route::get('/bin', [CardController::class, 'bin'])->name('bin');
+    Route::get('/cards/{bin}', [CardController::class, 'showCard'])->name('showCard');
     Route::get('/card/{id}', [CardController::class, 'showSpecificCard'])->name('showSpecificCard'); //for specific card detail
     Route::get('/card/{id}/payments', [CardController::class, 'showSpecificCardPayments'])->name('showSpecificCardPayments'); //for specific card payments
     Route::post('time-records-card-transaction/{id}', [CardController::class, 'timeRecordsCardTransaction'])->name('timeRecordsCardTransaction');

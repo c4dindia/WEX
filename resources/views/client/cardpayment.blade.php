@@ -18,7 +18,7 @@ Card Details
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
         <li class="breadcrumb-item">
-            <a href="{{ url('cards') }}" style="text-decoration: none; color:black">Expense Cards</a>
+            <a href="{{ url('cards') }}/{{ $card->org_name }}" style="text-decoration: none; color:black">Expense Cards</a>
         </li>
         <li class="breadcrumb-item breadcrumb-text-color " aria-current="page"><a href="#" style="text-decoration: none;">Card Payments</a></li>
     </ol>

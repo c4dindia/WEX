@@ -15,11 +15,34 @@ use Illuminate\Support\Facades\Log;
 
 class CardController extends Controller
 {
-    public function showCard()
+    public function showCard($bin)
     {
-        $cards =  Card::where('user_id', Auth::user()->id)->get();
+        $organization = [
+            'MMDA TR-MC-5551 (0007776)',
+            'MMDA TR-MC-555243 (0007774)',
+            'MMDA TR-MC-555244 (0007777)',
+            'MMDA TR-MC-5569 (0007775)',
+            'MMDA TR-V-4859 (0007778)',
+            'MMDA TR-V-428868 (0008771)',
+            'MMDA TR-V-428869 (0008772)',
+            'MMDA TR-V-428870 (0008773)'
+        ];
 
-        return view("client.cardlist", compact('cards'));
+        foreach ($organization as $org) {
+            if (preg_match('/^(.*?)\s*\((\d+)\)$/', $org, $matches)) {
+                $organizationName = trim($matches[1]);
+                $companyId = $matches[2];
+
+                if ($bin === $organizationName) {
+                    $orgId = $companyId;
+                    break;
+                }
+            }
+        }
+
+        $cards =  Card::where('user_id', Auth::user()->id)->where('org_name', $bin)->orderBy('created_at', 'desc')->get();
+
+        return view("client.cardlist", compact('cards', 'orgId', 'bin'));
     }
 
     public function showSpecificCard($id)
@@ -100,12 +123,6 @@ class CardController extends Controller
         $path = "purchase-logs/v1";
         $invoice = rand(100000, 999999);
 
-        $organization = $request->organization;
-        if (preg_match('/^(.+?)\s*\((\d+)\)$/', $organization, $matches)) {
-            $organizationName = trim($matches[1]);
-            $companyId = $matches[2];
-        }
-
         $client = new \GuzzleHttp\Client();
         try {
             $response = $client->request($methodType, $url . $path, [
@@ -122,7 +139,7 @@ class CardController extends Controller
                         'Trinity Resource',
                     ],
                     'org_bank_id' => '0010',
-                    'org_company_id' => (string)$companyId,
+                    'org_company_id' => (string)$request->orgId,
                     'cardholder_first_name' => $request->firstName . ' ' . $request->lastName,
                     'cardholder_address_street_1' => $user->address,
                     'cardholder_address_city' => $user->city,
@@ -145,7 +162,7 @@ class CardController extends Controller
                 'expiry_date' => $result['virtual_card']['expiration'],
                 'csc' => $result['virtual_card']['security_code'],
                 'org_bank_id' => $result['org_bank_id'],
-                'org_name' => $organizationName,
+                'org_name' => $request->orgName,
                 'org_company_id' => $result['org_company_id'],
                 'payment_status' => $result['payment_status']
             ]);
@@ -252,7 +269,7 @@ class CardController extends Controller
         ]);
 
         try {
-            Excel::import(new CardsImport, $request->file('file'));
+            Excel::import(new CardsImport($request->orgName, $request->orgId), $request->file('file'));
             return redirect()->back()->with('success', 'Bulk card import successfully.');
         } catch (ClientException $e) {
             $errorResponse = json_decode($e->getResponse()->getBody()->getContents(), true);
@@ -262,5 +279,10 @@ class CardController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    public function bin()
+    {
+        return view('client.bin');
     }
 }

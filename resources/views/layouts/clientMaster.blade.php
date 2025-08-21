@@ -181,7 +181,7 @@
                                 &nbsp;&nbsp;Accounts</a>
                         </li>
                         <li class="nav-item ">
-                            <a class="nav-link {{ $activePage == 'expense card' ? 'active-sidebar' : '' }}" href="{{ route('showCard') }}"><i class="fas fa-credit-card"></i>
+                            <a class="nav-link {{ $activePage == 'expense card' ? 'active-sidebar' : '' }}" href="{{ route('bin') }}"><i class="fas fa-credit-card"></i>
                                 &nbsp;&nbsp;Expense card</a>
                         </li>
                         <li class="nav-item">
