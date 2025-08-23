@@ -7,213 +7,159 @@ $activePage = 'expense card';
 Expense Card
 @endsection
 
-@section('css')
-<style>
-    /* Styles for validation feedback */
-    .is-valid {
-        border-color: #28a745;
-        /* Green for valid inputs */
-        background-color: #d4edda;
-        /* Light green background */
-    }
-
-    .is-invalid {
-        border-color: #dc3545;
-        /* Red for invalid inputs */
-        background-color: #f8d7da;
-        /* Light red background */
-    }
-
-    .error-message {
-        color: #dc3545;
-        /* Red text for error messages */
-        font-size: smaller;
-        /* Adjust font size if necessary */
-    }
-
-    .button:disabled {
-        cursor: not-allowed;
-        background-color: gray;
-    }
-</style>
-@endsection
-
 @section('pagecontent')
-@php
-$cU_currency_code = '$';
-$maxlimits = 100;
-@endphp
+<div class="body-content">
+    <div class="body-content-header">
+        <h5>Expense Card </h5>
+        <div id="add-card-div">
+            <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#importModal">
+                Import Cards
+            </button>
 
-{{-- page content --}}
-<nav aria-label=" breadcrumb">
-    <ol class="breadcrumb ">
-        <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
-        <li class="breadcrumb-item breadcrumb-text-color"><a href="#" style="text-decoration: none;">Expense Cards</a></li>
-    </ol>
-</nav>
-<section>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between pb-2">
-                <h4 class="dark-text-weight">Expense Card</h4>
-                <div id="add-card-div" style="display: flex;">
-                    <!-- Import Button-->
-                    <button type="button" class="btn topup-btn-bg first" data-bs-toggle="modal" data-bs-target="#importModal">
-                        IMPORT
-                    </button>
-                    <!-- Import excel Modal-->
-                    <div class="modal fade" id="importModal" tabindex="-1"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog ">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Import Cards</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body expenseCard-modal-bg">
-                                    <form action="{{ route('importCards') }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
+            <div class="modal" id="importModal">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title">Import Cards</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body expenseCard-modal-bg">
+                            <form action="{{ route('importCards') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
 
-                                        <input type="hidden" name="orgId" value="{{ $orgId }}">
-                                        <input type="hidden" name="orgName" value="{{ $bin }}">
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">File (Required .xlsx)</label>
-                                            <input type="file" class="form-control mb-2" id="file" name="file" required style="background-color: aliceblue;" accept=".xlsx">
-                                            <span style="color: var(--theem-text-color); ">All Columns are required to add:<br>
-                                                <small class="text-secondary">
-                                                    First name => <span class="text-black">string</span> <br>
-                                                    Last Name => <span class="text-black">string </span><br>
-                                                    Amount => <span class="text-black">Integer</span><br>
-                                                </small>
-                                            </span>
-                                        </div>
+                                <input type="hidden" name="orgId" value="{{ $orgId }}">
+                                <input type="hidden" name="orgName" value="{{ $bin }}">
+                                <div>
+                                    <label for="name" class="form-label">File (Required .xlsx)</label>
+                                    <input type="file" class="form-control mb-3" id="file" name="file" required accept=".xlsx">
+                                    <span style="color: var(--theem-text-color); ">All Columns are required to add:<br>
+                                        <small class="text-secondary">
+                                            First name => <span class="text-black">string</span> <br>
+                                            Last Name => <span class="text-black">string </span><br>
+                                            Amount (USD) => <span class="text-black">Integer</span><br>
+                                        </small>
+                                    </span>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="close-modalfooter-btn expensecard-create-btn animate-btn" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" id="importBtn" class="expensecard-import-btn animate-btn">Import</button>
+                        </div>
+                        <div class="modal-footer">
+                            <div style="overflow:auto;">
+                                <div style="float:right;">
+                                    <button type="button" class="prevBtn me-2" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" id="importBtn" class="nextBtn">Import</button>
                                 </div>
-                                </form>
                             </div>
                         </div>
+                        </form>
                     </div>
-                    <!-- ADD CARD BUTTON-->
-                    <button type="button" class="btn  makeapaymrnt second" data-bs-toggle="modal" data-bs-target="#exampleModal" style="margin-left: 6px">
-                        CREATE CARD
-                    </button>
-                    <!--add card Modal -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="multiStepModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header" style="display: flex; justify-content: space-between;">
-                                    <h5 class="modal-title" id="multiStepModalLabel">Create a Card</h5>
-                                    <div role="button" class="close cross-button-create-modal" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </div>
-                                </div>
-                                <div class="modal-body create-card-body">
-
-                                    <!-- Form Step 1 -->
-                                    <div class="form-step step-1 d-block">
-                                        <form id="add-card-form" action="{{ route('saveCards') }}" method="POST">
-                                            @csrf
-
-                                            <input type="hidden" name="orgId" value="{{ $orgId }}">
-                                            <input type="hidden" name="orgName" value="{{ $bin }}">
-                                            <div class="row">
-                                                <div class="col-md-12 d-flex gap-2">
-                                                    <div class="form-group mt-3" style="width: 100%;">
-                                                        <label for="firstName" class="createCard-label">First Name</label>
-                                                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" required>
-                                                    </div>
-                                                    <div class="form-group mt-3" style="width: 100%;">
-                                                        <label for="lastName" class="createCard-label">Last Name</label><br>
-                                                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-6 d-flex gap-2">
-                                                    <div class="form-group mt-3" style="width: 100%;">
-                                                        <label for="amount" class="createCard-label">Amount ($)</label><br>
-                                                        <input type="number" class="form-control" min="1" id="amount" name="amount" placeholder="Enter amount" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn expensecard-import-btn submit-step animate-btn" id="submit-btn" disabled>Create</button>
-                                </div>
-                            </div>
-                            </form>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
-            <hr style="padding: 0; margin: 0;">
+
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Create Card
+            </button>
+
+            <div class="modal" id="exampleModal">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title">Create a Card </h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body create-card-body">
+                            <div class="form-step step-1" style="display: block;">
+                                <form id="add-card-form" action="{{ route('saveCards') }}" method="POST">
+                                    @csrf
+
+                                    <input type="hidden" name="orgId" value="{{ $orgId }}">
+                                    <input type="hidden" name="orgName" value="{{ $bin }}">
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex gap-3">
+                                            <div class="form-group" style="width: 100%;">
+                                                <label for="firstName" class="createCard-label">First Name</label>
+                                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" required>
+                                            </div>
+                                            <div class="form-group" style="width: 100%;">
+                                                <label for="lastName" class="createCard-label">Last Name</label><br>
+                                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-md-12 d-flex gap-3">
+                                            <div class="form-group mt-3" style="width: 100%;">
+                                                <label for="amount" class="createCard-label">Amount (USD)</label>
+                                                <input type="number" class="form-control" min="1" id="amount" name="amount" placeholder="Enter amount" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div style="overflow:auto;">
+                                <div style="float:right;">
+                                    <button type="button" class="prevBtn me-2" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="submit-step nextBtn" id="submit-btn" disabled>Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
-    <div class="row mt-4">
-        <div class="col-md-12 table-wrapper scrollable-table expensecard-table table-responsive">
-            <table class="table table-striped mt-4 rounded-4">
+    <hr>
+    <div class="card">
+        <div class="table-responsive mt-3">
+            <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th class="p-3 tablecheck-Box-Max-width"></th>
-                        <th class="p-3" style="width: 20%">CARD NUMBER </th>
-                        <th class="p-3">Organization</th>
-                        <th class="p-3">NAME ON CARD </th>
-                        <th class="p-3 text-center" style="width: 15%">EXPIRY DATE </th>
-                        <th class="p-3 text-center" style="width: 15%">TYPE</th>
-                        <th class="p-3 text-center" style="width: 10%">STATUS</th>
+                        <th>CARD NUMBER</th>
+                        <th>ORGANISATION</th>
+                        <th>NAME ON CARD</th>
+                        <th>EXPIRY DATE</th>
+                        <th>TYPE</th>
+                        <th>STATUS</th>
                     </tr>
                 </thead>
-                <tbody style="max-height: 600px;">
+                <tbody>
                     @if (count($cards) == 0)
                     <tr>
-                        <td colspan="7" class="text-center">NO RECORDS AVAILABLE</td>
+                        <td colspan="6" class="text-center">NO RECORDS AVAILABLE</td>
                     </tr>
                     @else
 
                     @foreach ($cards as $card)
-                    <tr>
-                        <td class="tablecheck-Box-Max-width text-center">
-                            <input class="form-check-input rowCheck expenseCard-checkBox flexCheckChecked flexCheckChecked" type="checkbox" value="" id="flexCheckChecked">
-                        </td>
-                        @php
-                        $maskedCard = substr($card->card_number, 0, 4)
-                        . 'XXXXXXXX'
-                        . substr($card->card_number, -4);
-                        @endphp
-                        <td class="maskcard-number" style="width: 20%"> <a href="{{ url('/card') }}/{{ $card->id }}"> {{ $maskedCard }} </a></td>
-                        <td class=""> <a href="{{ url('/card') }}/{{ $card->id }}" style="color:rgb(0, 0, 0);"> {{ $card->org_name }}</a></td>
-                        <td class=""> <a href="{{ url('/card') }}/{{ $card->id }}" style="color: rgb(0, 0, 0);">{{ $card->cardholder_name }}</a> </td>
-                        <td class="text-center" style="width: 15%"> <a href="{{ url('/card') }}/{{ $card->id }}" style="color: rgb(0, 0, 0);"> {{ \Carbon\Carbon::parse($card->expiry_date)->format('m/y')}} </a></td>
-                        <td class="topUp-completed-color text-center " style="width: 15%"> <a href="{{ url('/card') }}/{{ $card->id }}" style="color: rgb(0, 0, 0);"> {{ $card->card_type }} </a></td>
+                    @php
+                    $maskedCard = substr($card->card_number, 0, 4)
+                    . 'XXXXXXXX'
+                    . substr($card->card_number, -4);
+                    @endphp
+                    <tr onclick="window.location.href='/card/{{ $card->id }}'" role="button">
+                        <td class="text-light">{{ $maskedCard }}</td>
+                        <td>{{ $card->org_name }}</td>
+                        <td>{{ $card->cardholder_name }}</td>
+                        <td>{{ \Carbon\Carbon::parse($card->expiry_date)->format('m/y')}}</td>
+                        <td>{{ $card->card_type }}</td>
                         @if ($card->status == '1')
-                        <td class="expenseCrad-active text-center fw-bold" style="width: 10%"> Active •</td>
+                        <td class="text-success">Active •</td>
                         @else
-                        <td class="text-secondary text-center fw-bold" style="width: 10%"> Close •</td>
+                        <td class="text-secondary">Close •</td>
                         @endif
                     </tr>
                     @endforeach
                     @endif
-
                 </tbody>
-
             </table>
         </div>
     </div>
-
-
-</section>
+</div>
 
 @endsection
 
 @section('scripts')
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('submit-btn');
@@ -254,6 +200,5 @@ $maxlimits = 100;
         });
     });
 </script>
-
 
 @endsection

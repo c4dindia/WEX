@@ -70,11 +70,11 @@
 
     <div class="header">
         <div style="display: inline-block; text-align: left;">
-            <img src="{{ public_path('ClientCss/images/neurosyncLogo.png') }}" alt="{{ public_path('ClientCss/images/neurosyncLogo.png') }}" style="display: block; margin-bottom: 5px;">
+            <img src="{{ public_path('newUI/images/logo.png') }}" alt="logo" style="display: block; margin-bottom: 5px; width: 100px;">
             <div style="text-align: center; font-size: 12px; font-weight: bold;">
                 {{ env('APP_NAME') }}
             </div>
-            <div style="text-align: center; font-size: 8px; font-weight: bold; color: gray;">
+            <div style="text-align: center; font-size: 7px; font-weight: bold; color: gray;">
                 Leicester, United Kingdom
             </div>
         </div>
@@ -103,7 +103,7 @@
                 <th>Card Number</th>
                 <th>Description</th>
                 <th>Transaction Id</th>
-                <th>Amount($)</th>
+                <th>Amount (USD)</th>
                 <th width="10%">Status</th>
             </tr>
         </thead>

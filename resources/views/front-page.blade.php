@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome</title>
+    <title>Trinity Payment</title>
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ URL::asset('ClientCss/images/neurosyncLogo.png') }}">
+    <link rel="icon" href="{{ asset('newUI/images/favicon.png') }}">
     <!-- bootstrap  -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- external css    -->
     <link rel="stylesheet" href="{{ asset('ClientCss/frontpage.css') }}">
-    
+
     <!-- SweetAlert2-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -29,11 +29,11 @@
       <div class="row d-flex justify-content-between align-items-center">
         <div class="col-md-2">
           <div class="front-log-img">
-            <img class="img-fluid" src="{{ asset('ClientCss/images/c4d-White.png') }}" alt="">
+            <img class="img-fluid" src="{{ asset('newUI/images/logo.png') }}" alt="">
           </div>
         </div>
         <div class="col-md-8">
-          <ul class="nav justify-content-center mt-4">
+          <ul class="nav justify-content-center mt-2">
             <li class="nav-item">
               <a class="nav-link  active-nav" aria-current="page" href="{{ route('showFrontPage') }}">Home</a>
             </li>
@@ -50,11 +50,13 @@
             @if(auth()->check())
                 @if(auth()->user()->is_admin == "1")
                 <a href="{{ route('showWallesterDashboard') }}">Go to Admin Dashboard</a>
+                @elseif(auth()->user()->is_admin == "4")
+                <a href="{{ route('showCardUserDashboard') }}">Go To Dashboard</a>
                 @else
                 <a href="{{ route('showClientDashboard') }}">Go to Dashboard</a>
                 @endif
             @else
-                <a href="{{ route('showClientLogin') }}">Card Login</a>
+                <a href="{{ route('showClientLogin') }}">Login</a>
             @endif
           </div>
         </div>
@@ -65,14 +67,14 @@
 
    </div> -->
 
-      <div class="container-fluid d-flex justify-content-center flex-column mt-5 mid-text" style="">
+      <div class="container-fluid d-flex justify-content-center flex-column mt-4 mid-text" style="">
         <div class="row  ">
             <div class="col-md-12 ">
               <div class="d-flex justify-content-center flex-column">
                <h2 class="get-instant-txt">Get Instant Cards</h2>
                <p class="get-instant-para mt-3">Easily create unlimited virtual cards in seconds. Empower you or your business with secure, fast, and flexible payments.</p>
                <div class="grab-your-card" style="z-index: 1000001 !important;">
-                <a href="{{ route('showClientRegister') }}" style="text-decoration: none">Grab Your Card</a>
+                <a href="{{ route('showClientLogin') }}" style="text-decoration: none">Grab Your Card</a>
                </div>
               </div>
             </div>
@@ -105,7 +107,7 @@
     </div>
 
         <div class="frame-img">
-          <img class="img-fluid" src="{{ asset('ClientCss/images/Frame1o.png') }}" alt="" >
+          <img class="img-fluid" src="{{ asset('newUI/images/laptop.png') }}" alt="" >
         </div>
         <div class="images-container">
           <div class="row" >
@@ -155,9 +157,9 @@
         Swal.fire({
             icon: 'error',
             title: '{{ session("error") }}',
-            showConfirmButton: false,  
+            showConfirmButton: false,
             timer: 2500, // Closes after 3 seconds (3000 milliseconds)
-            timerProgressBar: true, 
+            timerProgressBar: true,
         });
     </script>
      @endif

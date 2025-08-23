@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>C4D Payment | @yield('title')</title>
+    <title>Trinity Payment - @yield('title')</title>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('ClientCss/style.css') }}">
-    <!-- font awesome  -->
-    <script src="https://kit.fontawesome.com/6036d46694.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ URL::asset('ClientCss/images/c4d.png') }}">
+    <link rel="icon" href="{{ asset('newUI/images/favicon.png') }}">
+
+    <link href="{{ asset('newUI/css/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('newUI/css/fontawesome.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('newUI/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('newUI/css/main.css') }}" rel="stylesheet">
 
     @yield('css')
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Bootstrap CSS -->
-    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> --}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
 
     <!--SweetAlert2-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -83,123 +83,54 @@
 </head>
 
 <body>
-    <header class="top-header">
-        <div class="container-fluide d-flex align-items-center justify-content-md-between gap-5">
-            <div class="col-6 col-md-3 col-lg-2 menu-icon d-flex gap-2 pointer das-logo">
-                <!-- Hamburger Icon for Mobile -->
-                <!-- <i class="fa-solid fa-bars" id="sidebar-toggle"></i> -->
-                <div class="header-logo">
-                    <img src="{{ asset('ClientCss/images/c4d.png') }}" alt="Logo">
-                </div>
-            </div>
+    
 
-            <div class="d-sm-none d-md-none d-lg-block col-md-5 col-lg-7 col-xl-8 justify-content-xl-start hide-for-md" style="margin-top:10px;">
-                <form action="" class="search-bar-style" id="search-form">
+    <label for="menu-toggle" class="toggle-btn">☰ Menu</label>
+    <input type="checkbox" id="menu-toggle">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Close Button (only visible on mobile) -->
+        <label for="menu-toggle" class="close-btn">&times;</label>
+
+        <img src="{{ asset('newUI/images/logo.png') }}" alt="Logo" class="logo">
+        <nav>
+            <a class="nav-link {{ $activePage == 'top up' ? 'active' : '' }}" href="{{ route('showClientsTopUpHistoryPage') }}"><i class="bi bi-clock"></i> Top-up History</a>
+            <a class="nav-link {{ $activePage == 'create a card' ? 'active' : '' }}" href="{{ route('showClientCreateACard') }}"><i class="bi bi-credit-card"></i> Create a Card</a>
+            <hr>
+            <a class="nav-link {{ $activePage == 'dashboard' ? 'active' : '' }}" href="{{ route('showClientDashboard') }}"><i class="bi bi-grid"></i> Dashboard</a>
+            <!-- <a class="nav-link {{ $activePage == 'account' ? 'active' : '' }}" href="{{ route('showClientsAccountsPage') }}"><i class="fa-regular fa-circle-user"></i> Accounts</a> -->
+            <a class="nav-link {{ $activePage == 'expense card' ? 'active' : '' }}" href="{{ route('bin') }}"><i class="bi bi-credit-card-2-back"></i> Expense card</a>
+            <a class="nav-link {{ $activePage == 'statements' ? 'active' : '' }}" href="{{ route('showClientStatements') }}"><i class="bi bi-arrow-left-right"></i> Transactions</a>
+
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="top-header">
+            <div class="input-group w-25">
+                <form action="" class="w-100" id="search-form">
                     @csrf
-                    <div class=" d-flex align-items-center position-relative">
-                        <span class="px-2" style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                            <i class="fa-solid fa-magnifying-glass" style="color:#A1A1A1;"></i>
-                        </span>
-                        <input class="search-bar px-5" id="search-bar" type="text" placeholder="Enter Card Number or Card Name" autocomplete="off">
-                    </div>
+                    
+                    <input class="search-bar px-5" id="search-bar" type="text" placeholder="Enter Card Number or Card Name" autocomplete="off">   
                     <ul id="suggestions" class="suggestions-list" style="display: none;"></ul>
                 </form>
             </div>
+            
 
-            <div class="col-5 col-md-3 col-lg-2 col-xl-2 d-flex gap-3 align-items-center justify-content-xl-start" style="margin-top:10px;">
-                {{-- <div>
-                    <i class="fa-regular fa-circle-question"></i>
-                </div> --}}
-                <div class="d-flex align-items-center justify-content-center">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="rite-wc mb-0 pointer" style="border: none;background-color: black;color: white;padding: 10px 15px; "
-                            type="submit"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;Logout</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        <!-- Sidebar Wrapper with Top Sidebar -->
-        <div id="sidebar-wrapper">
-            <div class="top-sidebar show">
-                <div class="row d-flex gap-3">
-                    <div class="col-md-1 ">
-                        <div class="company-name">
-                            @php
-                            $name = \App\Models\User::where('id',Auth::user()->id)->first()['first_name'] . ' ' . \App\Models\User::where('id',Auth::user()->id)->first()['last_name'];
-                            $fLetter = substr($name,0,1);
-                            @endphp
-                            {{ $fLetter }}
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-10 d-flex align-items-center">
-                        <label class="c4d-headin-txt">{{ $name }}</label>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12 col-lg-12 mt-3">
-                        <p class="mb-2">Available Amount</p>
-
-                        <p class="amount-text">$0 </p>
-                        <div class="top-up  pointer">
-                            <a href="{{ route('showClientsTopUpHistoryPage') }}"
-                                class="d-flex align-items-center gap-4 text-white">
-                                <p class="mb-0 topsidebar-top-up"><i class="fa-solid fa-plus"></i>&nbsp; &nbsp;Top Up
-                                </p>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="icon-btn btn-primary" title="Logout" type="submit" data-bs-toggle="modal"
+                        data-bs-target="#logout"><i class="fa-solid fa-right-from-bracket me-2"></i>
+                        Logout 
+                    </button>
+                </form>
             </div>
 
-            <!-- Sidebar Navigation -->
-            <nav id="sidebar" class="mt-1">
-                <div class="p-1">
-                    @if(auth()->user()->is_admin == "2")
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link {{ $activePage == 'top up' ? 'active-sidebar' : '' }}" href="{{ route('showClientsTopUpHistoryPage') }}">
-                                <i class="fas fa-history"></i>&nbsp;&nbsp;Top-up History
-                            </a>
-                        </li>
-                        <li class="nav-item mt-1">
-                            <a class="nav-link {{ $activePage == 'create a card' ? 'active-sidebar' : '' }}" href="{{ route('showClientCreateACard') }}">
-                                <i class="fas fa-credit-card"></i>&nbsp;&nbsp;Create a card
-                            </a>
-                        </li>
-                        <hr>
-                        <li class="nav-item ">
-                            <a class="nav-link {{ $activePage == 'dashboard' ? 'active-sidebar' : '' }}" href="{{ route('showClientDashboard') }}"><i class="fas fa-tachometer-alt"></i>
-                                &nbsp;&nbsp;Dashboard</a>
-                        </li>
-                        <li class="nav-item my-1">
-                            <a class="nav-link {{ $activePage == 'account' ? 'active-sidebar' : '' }}" href="{{ route('showClientsAccountsPage') }}"><i class="fas fa-users"></i>
-                                &nbsp;&nbsp;Accounts</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link {{ $activePage == 'expense card' ? 'active-sidebar' : '' }}" href="{{ route('bin') }}"><i class="fas fa-credit-card"></i>
-                                &nbsp;&nbsp;Expense card</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $activePage == 'statements' ? 'active-sidebar' : '' }}" href="{{ route('showClientStatements') }}"><i class="fas fa-file-alt"></i>
-                                &nbsp;&nbsp;Statement</a>
-                        </li>
-                    </ul>
-                    @endif
-                </div>
-            </nav>
         </div>
-
-        <!-- Main Content Area -->
-
-        <main class=" " style="height: 850px;">
-            @yield('pagecontent')
-
-        </main>
+        @yield('pagecontent')
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -218,7 +149,8 @@
         Swal.fire({
             icon: 'success',
             title: '{{ session('success') }}',
-            showConfirmButton: true
+            showConfirmButton: true,
+            confirmButtonColor: '#7e1718'
         }).then((result) => {
             if (result.isConfirmed) {
                 @php
@@ -235,7 +167,8 @@
         Swal.fire({
             icon: 'error',
             title: '{{ session('error') }}',
-            showConfirmButton: true
+            showConfirmButton: true,
+            confirmButtonColor: '#7e1718'
         }).then((result) => {
             // Flush the session message
             @php
@@ -259,27 +192,29 @@
                             q: query
                         },
                         success: function(data) {
+                            console.log(data);
                             const suggestions = $('#suggestions');
                             suggestions.empty();
 
                             if (data.length) {
                                 suggestions.show();
                                 data.forEach(function(item) {
+                                    // suggestions.append(`<li><a href="{{ url('/cards') }}/${item.card_id}">${item.card_name} ${item.masked_number} ${item.type} ${item.status}</li>`);
                                     suggestions.append(`
                                           <li>
-                                             <a href="{{ url('/card') }}/${item.id}" style="text-decoration: none; color: inherit;">
+                                             <a href="{{ url('/cards') }}/${item.id}" style="text-decoration: none; color: inherit;">
                                                  <div style="display: flex; justify-content: space-between; align-items: center;">
                                                      <div>
-                                                        <strong>${item.cardholder_name}</strong>
-                                                        <div style="color: gray;">${item.mask_card_number}</div>
+                                                         <strong>${item.cardholder_name}</strong>
+                                                         <div style="color: gray;">${item.mask_card_number}</div>
                                                      </div>
                                                      <div>
-                                                        <strong style=" padding: 4px 8px; border-radius: 20px; color: ${item.card_type === 'Virtual' ? 'black' : '#721c24'};">
-                                                            ${item.card_type} Card
-                                                        </strong>
-                                                        <strong style="margin-left: 8px; background-color: ${item.status == '1' ? '#d1e7dd' : '#f8d7da'}; padding: 4px 8px; border-radius: 20px; color: ${item.status == '1' ? '#0f5132' : '#721c24'};">
+                                                         <strong style=" padding: 4px 8px; border-radius: 20px; color: ${item.card_type === 'VIRTUAL' ? 'black' : '#721c24'};">
+                                                         ${item.card_type} Card
+                                                         </strong>
+                                                         <strong style="margin-left: 8px; background-color: ${item.status == '1' ? '#d1e7dd' : '#f8d7da'}; padding: 4px 8px; border-radius: 20px; color: ${item.status == '1' ? '#0f5132' : '#721c24'};">
                                                             ${item.status == '1' ? 'Active' : 'Closed'}
-                                                        </strong>
+                                                         </strong>
                                                      </div>
                                                  </div>
                                              </a>

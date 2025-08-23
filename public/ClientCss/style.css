@@ -338,7 +338,7 @@ ul li {
 
 
 .custom-progress-bar {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .custom-progress-bar .progress {
@@ -411,10 +411,11 @@ input[type="radio"]:checked+.toggle-option {
 }
 
 .header-logo img {
-    height: 75px;
-    width: 110%;
+    height: 60px;
+    width: 100%;
     position: relative;
-    left: 50px;
+    left: 35px;
+    top: 10px;
 }
 
 .menu-icon {
@@ -709,8 +710,6 @@ main {
 /* togle button  */
 .toggle-container {
     display: inline-flex;
-    background-color: var(--white-color);
-    border-radius: 50px;
     padding: 5px;
     align-items: center;
 }
@@ -1203,7 +1202,7 @@ input[type="number"] {
 
 .scrollable-table tbody {
     display: block;
-    max-height: 470px;
+    max-height: 400px;
     overflow: scroll;
     width: 100%;
     -ms-overflow-style: none;

@@ -8,195 +8,124 @@ Statements
 @endsection
 
 @section('css')
-{{-- statements page css --}}
-{{-- <style>
-        .c4d-table-data th {
-            font-weight: 400;
-        }
-        .statement-th th {
-            font-weight: 300;
-        }
-        .content i {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 40px;
-            border-radius: 5px;
-            margin-right: 10px;
-            background-color: #FEFBF6;
-        }
+<style>
+    .month-section p {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 
-        .acnt-statement-p-1 p {
-            padding: 5px 10px;
-            border: none;
-            text-align: center;
-            border-radius: 21px;
-            background-color: #F3F2FF;
-            box-shadow: var(--light-box-shadow);
-            outline: none;
-        }
-    </style> --}}
+    }
+
+    .date-section {
+        background-color: #fff;
+        padding: 5px;
+        border-radius: 10px;
+    }
+
+    .sub-date-section input {
+        border: none;
+        background-color: #f8d7da;
+        border-radius: 10px;
+        padding: 5px;
+        color: #7e1718;
+    }
+
+    .go-btn,
+    .go-btn:hover {
+        background: #7e1718 !important;
+        padding: 5px 10px !important;
+        color: #fff !important;
+
+    }
+</style>
 @endsection
 
-@php
-$cU_currency_code = '$';
-@endphp
-
-
 @section('pagecontent')
-<!-- start content -->
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
-        <li class="breadcrumb-item breadcrumb-text-color"><a href="#" style="text-decoration: none;">Account Statements</a></li>
-    </ol>
-</nav>
-<section>
-    <div class="row d-flex align-items-center justify-content-between mb-2">
-        <div class="col-md-6">
-            <h4 class="dark-text-weight">Statements</h4>
+
+<div class="body-content">
+    <div class="body-content-header">
+        <h5>Statements</h5>
+        <div class="d-flex align-items-center">
+            <p>Download your card statements : <a href="{{ route('userDownloadCardStatement') }}" class="text-light">Download</a></p>
         </div>
-        <hr style="padding: 0; margin: 0;">
+    </div>
+    <hr>
+
+    <div class="card-iconn py-0">
+        <p class="mb-2"><b>Total number of payments:</b> {{ $transactions->count() }}</p>
+        <div class="row ms-1">
+            <div class="col-xxl-1 col-xl-2 col-lg-2 col-md-2 col-sm-3 p-0" style="width: 15%;">
+                <div class="bg-white" style="padding: 12px; border-radius: 5px; text-align: center;">
+                    <label for="fromDate">Select Date:</label>
+                </div>
+            </div>
+            <div class="col-xxl-5 col-xl-6 col-lg-10 col-md-10 col-sm-12">
+                <form action="{{ route('timeRecordsAccountStatement') }}" method="POST" class="date-filter">
+                    @csrf
+
+                    <input type="datetime-local" class="form-control" name="start_date" id="fromDate" value="2024-01-01T00:00">
+                    <span>to</span>
+                    <input type="datetime-local" class="form-control" name="end_date" id="toDate" value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <button type="submit" class="btn btn-go">Go</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
+    <div class="card">
+        <div class="table-responsive mt-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th style="width: 20%;">Sender/Receiver</th>
+                        <th style="width: 20%;">Description</th>
+                        <th>Transaction ID</th>
+                        <th>Card Number</th>
+                        <th>Amount (USD)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (count($transactions) == 0)
+                    <tr>
+                        <td colspan="7" class="text-center">No Records found. </td>
+                    </tr>
+                    @else
 
-            <p class=""><span class="fw-bold">Total number of payments: </span> {{ count($transactions) }}</p>
-
-            <div class="row d-flex align-items-center justify-content-between gap-2">
-                <div class="col-md-6 col-lg-7 col-xl-6 d-flex gap-2">
-                    <div class="month-section">
-                        <p class="mb-0">Select Date:</p>
-                    </div>
-                    <div class="date-section d-flex align-items-center">
-                        <form action="{{ route('timeRecordsAccountStatement') }}" method="POST">
-                            @csrf
-                            <div class="d-flex gap-2 align-items-center sub-date-section">
-                                <input type="datetime-local" name="start_date" id="" class="acnt-statement-sel-2" value="2024-01-01T00:00:00">
-                                <p class="mb-0">to</p>
-                                <input type="datetime-local" name="end_date" id="" class="acnt-statement-sel-2" value="{{ now()->format('Y-m-d\TH:i') }}">
-                                <button type="submit" class="btn go-btn text-uppercase">Go</button>
+                    @foreach ($transactions as $statement)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($statement->transaction_date)->format('d  M  Y')}}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ asset('ClientCss/images/NullImage.png') }}" class="me-2 Wallester img-fluid">
+                                <h6 class="mb-0">{{ $statement->cardholder_name }}</h6>
                             </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-5 col-xl-5 d-flex justify-content-lg-start justify-content-xl-end justify-content-md-start">
-                    <a href="{{ route('userDownloadCardStatement') }}" class="generate-btn text-uppercase">Generate Account Statement</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- table -->
-        <div class="p-2 mt-2 ">
-            <div class="table-responsive scrollable-table"> {{-- table-wrapper scrollable-table --}}
-                <table class="table table-striped mt-2 rounded-4">
-                    <thead>
-                        <tr>
-                            <th class="py-3 text-center th-1-w" style="color: #5a5a5a;">Date</th>
-                            <th class="py-3" style="color: #5a5a5a; width: 20%;">Sender/Receiver</th>
-                            <th class="py-3" style="color: #5a5a5a; width: 20%;">Description</th>
-                            <th class="py-3" style="color: #5a5a5a;">Card Number</th>
-                            <th class="py-3" style="color: #5a5a5a;">Transaction ID</th>
-                            <th class="py-3 text-center" style="color: #5a5a5a; width: 10%;">Amount ({{ $cU_currency_code }})</th>
-                            <th class="py-3 text-center" style="color: #5a5a5a; width: 10%;">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (count($transactions) == 0)
-                        <tr>
-                            <td colspan="7" class="text-center">No Records found. </td>
-                        </tr>
+                        </td>
+                        <td>
+                            <p><b>{{ $statement->transaction_type }}</b></p>
+                            <p>{{ $statement->merchant_description }}</p>
+                        </td>
+                        <td>{{ $statement->transaction_id }}</td>
+                        <td>{{ substr($statement->card_number, -4) }}</td>
+                        <td style="color: #CD1F1F;">-{{ $statement->billing_amount }}</td>
+                        @if ($statement->is_credit == 'true')
+                        <td class="text-success">Complete</td>
                         @else
-                        @foreach ($transactions as $statement)
-                        <tr>
-                            <td class="text-center th-1-w"> {{ \Carbon\Carbon::parse($statement->transaction_date)->format('d M Y')}}</td>
-                            <td class="" style="width: 20%;">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="acc-detail-table-img ">
-                                        @if ($statement->icon_url != null)
-                                        @if ($statement->icon_url == 'https://wallester-production-client-files.s3.eu-west-1.amazonaws.com/wallester-icon64x64.png')
-                                        <img src="{{ asset('ClientCss/images/NullImage.png') }}" alt="Mrchnt_Img">
-                                        @else
-                                        <img src="{{ $statement->icon_url }}" alt="merch Icon">
-                                        @endif
-                                        @else
-                                        <img src="{{ asset('ClientCss/images/NullImage.png') }}" alt="img">
-                                        @endif
-                                    </div>
-                                    <div class="d-flex flex-column align-items-start">
-                                        <h6 class="company-name-table truncate-text" title="{{ $statement->cardholder_name }}">
-                                            {{ $statement->cardholder_name }}
-                                        </h6>
-                                    </div>
-                                </div>
-                            </td>
-                            <td style="width: 20%;">
-                                <div>
-                                    <h6 class="acc-table-description-hed">{{ $statement->transaction_type }}</h6>
-                                    <p class="acc-table-description-p me-2">{{ $statement->merchant_description }}</p>
-                                </div>
-                            </td>
-                            <td class="">
-                                <div>
-                                    <span class="mb-0">{{ substr($statement->card_number, -4) }}</span>
-                                </div>
-                            </td>
-                            <td class="" style="">
-                                <div>
-                                    <span class="mb-0">{{ $statement->transaction_id }}</span>
-                                </div>
-                            </td>
-                            <td style="width: 10%;" class="text-center">
-                                <div>
-                                    <h6 class="mb-0 acc-detail-gbp-h-green">{{ $cU_currency_code }}{{ $statement->billing_amount }}</h6>
-                                </div>
-                            </td>
-                            <td class=" text-center">
-                                @if ($statement->is_credit == 'true')
-                                <strong class="text-success">Complete</strong>
-                                @else
-                                <strong class="default-red-color">Pending</strong>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
+                        <td class="text-danger">Pending</td>
                         @endif
-
-                    </tbody>
-                </table>
-            </div>
-
+                    </tr>
+                    @endforeach
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
-</section>
+</div>
 
 @endsection
 
 @section('scripts')
-<script>
-    $(document).ready(function() {
-        $.ajax({
-            url: "/kyc-status",
-            type: "GET",
-            success: function(data) {
-                if (data.status !== 'APPROVED') {
-                    Swal.fire({
-                        title: "KYC Verification",
-                        html: "<p>Complete your KYC verification to unlock card creation and management features.</p><p>Click <a href='/kyc-verify' class='text-primary'>here</a> to complete your KYC.</p>",
-                        icon: "info",
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        backdrop: true
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error fetching dashboard data:", error);
-            }
-        });
-    });
-</script>
 @endsection
