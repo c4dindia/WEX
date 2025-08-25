@@ -2,259 +2,226 @@
 
 @section('title')
 @php
-$activePage ='null';
+$activePage ='expense card';
 @endphp
 Card Details
 @endsection
 
-@section('css')
+@section ('css')
 <style>
-    /* Styles for validation feedback */
-    .text-danger-monthly {
-        color: #dc3545 !important;
-        /* Red text for error messages */
-        font-size: smaller !important;
-        /* Adjust font size if necessary */
+    .card-table td {
+        padding: 12px 30px !important;
     }
 
-    .text-danger-daily {
-        color: #dc3545 !important;
-        /* Red text for error messages */
-        font-size: smaller !important;
-        /* Adjust font size if necessary */
-    }
-
-    .atm-card {
-        background-image: url("{{ asset('ClientCss/images/c4d_card.png') }}") !important;
-    }
-
-    .after-freezcard {
-        background-color: var(--card-freeze-greay-color);
-        color: var(--white-color);
-        background-image: url("{{ asset('ClientCss/images/Card Disabled.png') }}") !important;
-    }
-
-    .after-freezcard-icon {
-        background: var(--icon-freezed-bg-color) !important;
-        color: var(--white-color) !important;
+    .card-icon{
+        padding: 30px !important;
     }
 </style>
 @endsection
 
 @section('pagecontent')
-@php
-$cU_currency_code = '€';
-@endphp
-{{-- Page Content --}}
 
-
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('showClientDashboard') }}" style="text-decoration: none; color:black">Home</a></li>
-        <li class="breadcrumb-item">
-            <a href="{{ url('cards') }}/{{ $card->org_name }}" style="text-decoration: none; color:black">Expense Cards</a>
-        </li>
-        <li class="breadcrumb-item breadcrumb-text-color " aria-current="page"><a href="#" style="text-decoration: none;">Card Details</a></li>
-    </ol>
-</nav>
-<section>
-    <div class="row">
-        <div class="col-md-12">
-            @php
-            $maskedCard = substr($card->card_number, 0, 4)
-            . 'XXXXXXXX'
-            . substr($card->card_number, -4);
-            @endphp
-            <h4 class="dark-text-weight">{{ $maskedCard }} Details</h4>
-            <nav id="menu" class="p-0 mt-4">
-                <ul class="d-flex gap-3 p-0 m-0">
-                    <li class="tab-1 card-details"><a href="{{ url('/card') }}/{{ $card->id }}" class="normal active">CARD DETAILS</a></li>
-                    <li class="tab-1 payments-details"><a href="{{ url('/card') }}/{{ $card->id }}/payments" class="normal">PAYMENTS</a></li>
-                </ul>
-                <hr style="padding: 0; margin: 0;">
-            </nav>
-
-            <div class="row d-flex gap-5 gap-md-0">
-                <div class="col-md-4 p-3">
-                    <div class="atm-card {{ ($card->status != '1') ? 'after-freezcard' : '' }}">
-                        <div class="atmCard-eye-wrapper">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                        <div class="d-flex gap-3 card-dots">
-                            <div data-real-value="{{ $card['card_number'] }}">•••• •••• •••• ••••</div>
-                        </div>
-                        <div class="card-valid-details">
-                            <div>VALID THRU <span>{{ \Carbon\Carbon::parse($card->expiry_date)->format('m/y')}}</span></div>
-                            <div>CSC <span class="cvv-dots" data-real-value="{{ $card['csc'] }}">•••</span> </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+<div class="body-content">
+    <div class="body-content-header">
+        @php
+        $maskedCard = substr($card->card_number, 0, 4)
+        . 'XXXXXXXX'
+        . substr($card->card_number, -4);
+        @endphp
+        <h5>{{ $maskedCard }} Details</h5>
     </div>
-    <div class="row ">
-        <div class="col-md-6 forDetails-section">
-            <div class="details-wrapper">
-                <h4 class="card-details-h4-tag">Details</h4>
-                <table>
-                    <tr>
-                        <td class="details-data carddetail-headerfont">Card Holder</td>
-                        <td>{{ $card->cardholder_name }} &nbsp; <i class="fa-solid fa-pen-to-square" data-bs-toggle="modal" data-bs-target="#nameEdit" style="cursor: pointer;"></i></td>
-                    </tr>
-
-                    <div class="modal fade" id="nameEdit" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Card Name</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body" style="background-color: var(--main-body-bg-color);">
-                                    <form action="{{ url('/change-cardholder') }}/{{ $card->id }}" method="POST">
-                                        @csrf
-                                        @php
-                                        $nameParts = explode(' ', $card->cardholder_name, 2);
-                                        @endphp
-                                        <div class="mb-3">
-                                            <label for="exampleFormControlInput1" class="form-label">First Name:</label>
-                                            <input type="text" class="form-control" id="exampleFormControlInput1" name="firstName" value="{{ $nameParts[0] }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="exampleFormControlInput1" class="form-label">Last Name:</label>
-                                            <input type="text" class="form-control" id="exampleFormControlInput1" name="lastName" value="{{ $nameParts[1] }}" required>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn default-borderd-btn animate-btn" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn button-bg-yes animate-btn">Save changes</button>
-                                </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <tr>
-                        <td class="details-data carddetail-headerfont">Account</td>
-                        <td>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="details-data carddetail-headerfont">Status</td>
-                        <td class="indexPage-active">
-                            @if ($card->status == '1')
-                            <span class="acc-detail-gbp-h-green">Active •</span>
-                            @else
-                            <span class="text-secondary">Closed •</span>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="details-data carddetail-headerfont">Type</td>
-                        <td>{{ ucwords(strtolower($card->card_type)) }}</td>
-                    </tr>
-                    <tr>
-                        <td class="details-data carddetail-headerfont">Expiration Date</td>
-                        <td>{{ \Carbon\Carbon::parse($card->expiry_date)->format('d M Y')}}</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="accordion" id="accordionExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            <h4 class="card-details-h4-tag">Sensitive Information</h4>
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <div class="senstive-data-wrapper">
-                                <table>
-                                    <tr>
-                                        <td class="sen-data-td1 carddetail-headerfont">Card Number</td>
-                                        <td class="sen-data-td2">
-                                            <span class="hidden-data" data-visible="false" data-actual="{{ $card['card_number'] }}">•••• •••• •••• ••••</span>
-                                        </td>
-                                        <td>
-                                            <i class="fa-solid fa-eye toggle-eye sens-info-icon"></i>&nbsp;&nbsp;
-                                        </td>
-                                        <td>
-                                            <i class="fa-regular fa-copy copy-data sens-info-icon"></i>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="sen-data-td1 carddetail-headerfont">CSC</td>
-                                        <td class="sen-data-td2">
-                                            <span class="hidden-data" data-visible="false" data-actual="{{ $card['csc'] }}">•••</span>
-                                        </td>
-                                        <td>
-                                            <i class="fa-solid fa-eye toggle-eye sens-info-icon"></i>&nbsp;&nbsp;
-                                        </td>
-                                        <td>
-                                            <i class="fa-regular fa-copy copy-data sens-info-icon"></i>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" onclick="window.location.href = '/card/{{$card->id}}'">Card details</button>
+            <button class="nav-link" onclick="window.location.href = '/card/{{$card->id}}/payments'">Payments</button>
         </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="row mt-4">
+                <div class="col-xxl-4 col-xl-4">
+                    <div class="ec-img-card">
+                        <div class="img-container">
+                            @if ($card->status == "1")
+                            <img class="card-img mt-3" src="{{ asset('newUI/images/visa.jpg') }}" alt="Card image" style="border-radius: 12px; object-fit: fill;position: relative;" />
+                            @else
+                            <img class="card-img mt-3" src="{{ asset('ClientCss/images/Card Disabled.png') }}" alt="Card image" style="border-radius: 12px; object-fit: fill;position: relative;">
+                            @endif
+                        </div>
 
-        <div class="col-md-6" style="padding-left: 20rem;">
-            <div class="" style="width: 95%;">
-                <h4 style="font-size: 18px; font-weight: 700; margin-left: 10px;">Limits</h4>
-            </div>
+                        <div class="img-card-number" id="card-number" data-real-value="{{ trim( chunk_split($card->card_number, 4, ' ')) }}">•••• •••• •••• ••••</div>
+                        <div class="img-expiry" id="card-expiry">VALID THRU {{ \Carbon\Carbon::parse($card->expiry_date)->format('m/y')}}</div>
+                        <div class="img-cvv" id="card-cvv" data-real-value="{{ $card->csc }}">CVV •••</div>
 
-            <!-- Daily Cards -->
-            <div id="daily-cards" class="cards-container">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between">
-                        <div class="icon"><i class="fas fa-credit-card"></i></div>
-                        <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#editLimitModal"><i class="fa-solid fa-pen-to-square"></i>
+                        <div class="img-eye cursor-pointer" id="toggle-eye">
+                            <i class="far fa-eye card-eye"></i>
                         </div>
                     </div>
-                    <div class="card-content card-horizontal-padding">
-                        <p class="card-name">Credit Limit</p>
-                        <h2 class="fw-bold">${{ round($card->credit_limit) }}</h2>
+                </div>
+                <div class="col-xxl-8 col-xl-8">
+                    <div class="card-table">
+                        <h6 style="margin:15px 30px; font-size: 24px;">Details</h6>
+                        <table style="width:100%">
+                            <tr>
+                                <td>Card Holder</td>
+                                <td>{{ $card->cardholder_name }} <i class="bi bi-pencil-square" role="button" data-bs-toggle="modal"
+                                        data-bs-target="#cardedit"
+                                        style="color: #7e1718; font-weight: 600; font-size: 15px; margin-left: 5px;"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Account</td>
+                                <td>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</td>
+                            </tr>
+
+                            <tr>
+                                <td>Status</td>
+                                @if ($card->status == '1')
+                                <td class="text-success">Active</td>
+                                @else
+                                <td class="text-danger">Closed</td>
+                                @endif
+                            </tr>
+                            <tr>
+                                <td>Type</td>
+                                <td>{{ ucwords(strtolower($card->card_type)) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Expiration Date</td>
+                                <td>{{ \Carbon\Carbon::parse($card->expiry_date)->format('d M Y') }}</td>
+                            </tr>
+
+                        </table>
+
                     </div>
                 </div>
             </div>
 
-            <div class="modal fade modal-lg mt-5" id="editLimitModal" tabindex="-1" aria-labelledby="editLimitModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title fs-5" id="editLimitModalLabel" style="color: var(--buttonBg-dark-color);">
-                                <i class="fa-solid fa-pen-to-square"></i> &nbsp;Edit Card Limit
-                            </h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            <div class="d-flex align-items-center justify-content-between pt-4 mt-2 pb-2">
+                <h6 class="mb-0" style="font-size: 24px;">Limits</h6>
+            </div>
+            <div class="row">
+                <div class="col-xxl-6 col-xl-6">
+                    <div class="card-icon mt-0 h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <p class="m-0"><i class="fas fa-money-bill icons-btn"></i> Credit Limit</p>
+                            <i class="bi bi-pencil-square"
+                                data-bs-toggle="modal"
+                                data-bs-target="#cardlimit"
+                                style="color: #7e1718; font-weight: 600; font-size: 20px;"></i>
                         </div>
-                        <form id="editLimitForm" method="POST" action="{{ url('/credit-limit') }}/{{$card->id}}">
-                            @csrf
-                            <div class="modal-body" style="background-color: var(--main-body-bg-color);">
-                                <div class="col-md-12 my-3">
-                                    <label class="mb-2">&nbsp;Credit Limit</label>
-                                    <div class="d-flex gap-2 align-items-center editInputField">
-                                        <p>$</p>
-                                        <input type="number" name="amount" value="{{ round($card->credit_limit) }}" min="1" class="form-control" required>
+                        <div class="row">
+                            <div
+                                class="col-xxl-2 col-xl-2 col-lg-3 col-md-3 col-sm-12 col-12 align-content-center">
+                                <h6 style="width: max-content;">USD {{ round($card->credit_limit) }}</h6>
+                            </div>
+                            <div
+                                class="col-xxl-9 col-xl-9 col-lg-8 col-md-8 col-sm-12 col-12 align-content-center">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="50"
+                                        aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                                        <span class="sr-only">70% Complete</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn button-bg-no animate-btn" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" id="saveLimitBtn" class="btn button-bg-yes animate-btn">Save</button>
+                            <div
+                                class="col-xxl-1 col-xl-1 col-lg-1 col-md-1 col-sm-12 col-12 align-content-center">
+                                <p style="background-color: #e8eeee; padding: 4px 0; text-align: center; color: #7e1718; font-weight: 600; font-size: 12px; border-radius: 50px; margin: 0px;">
+                                    0%</p>
                             </div>
-                        </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-6 col-xl-6">
+                    <div class="card-table">
+                        <h6 style="margin:15px 30px;">Sensitive Information</h6>
+                        <table style="width:100%" class="sensitive-table">
+                            <tr>
+                                <td class="w-50">Card Number</td>
+                                <td class="hidden-data" data-visible="false" data-actual="{{trim( chunk_split($card->card_number, 4, ''))  }}">•••• •••• •••• ••••
+                                </td>
+                                <td class="text-end"><i class="far fa-eye toggle-eye" role="button"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="w-50">CVV</td>
+                                <td class="hidden-data" data-visible="false" data-actual="{{ $card->csc }}">•••
+                                </td>
+                                <td class="text-end"><i class="far fa-eye toggle-eye" role="button"></i></td>
+                            </tr>
+
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<div class="modal" id="cardlimit">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"> <i class="bi bi-pencil-square"></i> Edit Card Limit</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editLimitForm" method="POST" action="{{ url('/credit-limit') }}/{{$card->id}}">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xxl-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Credit Limit</label>
+                                <input type="number" inputmode="numeric" name="amount" value="{{ round($card->credit_limit) }}" min="1" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="saveLimitBtn" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="cardedit">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Edit Card Name</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form action="{{ url('/change-cardholder') }}/{{ $card->id }}" method="POST">
+                @csrf
+                @php
+                $nameParts = explode(' ', $card->cardholder_name, 2);
+                @endphp
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xxl-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" placeholder="Enter First Name" name="firstName" value="{{ $nameParts[0] }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Last Name" name="lastName" value="{{ $nameParts[1] }}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="save" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -276,7 +243,34 @@ $cU_currency_code = '€';
         }
     }
 </script>
+
+{{-- Validation scripts --}}
 <script>
+    function toggleCards(selection) {
+        document.querySelectorAll('[id$="-cards"]').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        const selectedSection = document.getElementById(selection + '-cards');
+        if (selectedSection) {
+            selectedSection.style.display = 'block';
+        }
+
+        localStorage.setItem('selectedPeriod', selection);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedPeriod = localStorage.getItem('selectedPeriod');
+        const dropdown = document.getElementById('time-limit');
+
+        if (savedPeriod) {
+            dropdown.value = savedPeriod;
+            toggleCards(savedPeriod);
+        } else {
+            toggleCards('daily');
+        }
+    });
+
     //  for senstive data
     document.querySelectorAll('.toggle-eye').forEach(function(eyeIcon) {
         eyeIcon.addEventListener('click', function() {
@@ -284,35 +278,24 @@ $cU_currency_code = '€';
             const isVisible = hiddenData.getAttribute('data-visible') === 'true';
 
             if (isVisible) {
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
                 hiddenData.textContent = hiddenData.getAttribute('data-actual').replace(/./g, '•');
                 hiddenData.setAttribute('data-visible', 'false');
             } else {
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
                 hiddenData.textContent = hiddenData.getAttribute('data-actual');
                 hiddenData.setAttribute('data-visible', 'true');
             }
         });
     });
 
-    document.querySelectorAll('.copy-data').forEach(function(copyIcon) {
-        copyIcon.addEventListener('click', function() {
-            const hiddenData = this.closest('tr').querySelector('.hidden-data');
-            const actualData = hiddenData.getAttribute('data-actual');
-            const tempInput = document.createElement('input');
-            document.body.appendChild(tempInput);
-            tempInput.value = actualData;
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            alert('Data copied: ' + actualData);
-        });
-    });
-
     // after clicking eye icon card data changes
     document.addEventListener("DOMContentLoaded", function() {
-        const cardeyeIcon = document.querySelector(".atmCard-eye-wrapper i");
-        const cardDots = document.querySelector(".card-dots div");
-        const cvvDots = document.querySelector(".cvv-dots");
+        const cardeyeIcon = document.querySelector(".card-eye");
+        const cardDots = document.querySelector(".img-card-number");
+        const cvvDots = document.querySelector(".img-cvv");
 
         cardeyeIcon.addEventListener("click", function() {
             if (cardDots.textContent.includes("•")) {
@@ -321,9 +304,9 @@ $cU_currency_code = '€';
                 cardDots.textContent = "•••• •••• •••• ••••";
             }
             if (cvvDots.textContent.includes("•")) {
-                cvvDots.textContent = cvvDots.dataset.realValue;
+                cvvDots.textContent = 'CVV ' + cvvDots.dataset.realValue;
             } else {
-                cvvDots.textContent = "•••";
+                cvvDots.textContent = "CVV •••";
             }
 
             cardeyeIcon.classList.toggle("fa-eye");
@@ -331,4 +314,5 @@ $cU_currency_code = '€';
         });
     });
 </script>
+
 @endsection

@@ -315,7 +315,6 @@ thead {
 
 .img-container {
     position: relative;
-    height: 70%;
 
 }
 
@@ -718,26 +717,26 @@ button:disabled {
 
     .img-card-number {
 
-        top: 28%;
+        top: 36%;
         left: 9%;
     }
 
     .img-expiry {
         margin-top: 20px;
-        top: 33%;
+        top: 40%;
         left: 9%;
     }
 
     .img-cvv {
         margin-top: 20px;
-        top: 40%;
+        top: 47%;
         left: 9%;
     }
 
     /* Single container for both icons */
     .img-eye {
         position: absolute;
-        top: 20%;
+        top: 25%;
         left: 80%;
         cursor: pointer;
     }
@@ -772,26 +771,26 @@ button:disabled {
 
     .img-card-number {
 
-        top: 28%;
+        top: 32%;
         left: 10%;
     }
 
     .img-expiry {
         margin-top: 20px;
-        top: 32%;
+        top: 36%;
         left: 10%;
     }
 
     .img-cvv {
         margin-top: 20px;
-        top: 39%;
+        top: 44%;
         left: 10%;
     }
 
     /* Single container for both icons */
     .img-eye {
         position: absolute;
-        top: 20%;
+        top: 28%;
         left: 80%;
         cursor: pointer;
     }
