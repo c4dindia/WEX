@@ -90,6 +90,7 @@ Route::group(['middleware' => ['auth', 'check.client.status']], function () {
     Route::post('/save-cards', [CardController::class, 'saveCards'])->name('saveCards');
     Route::post('/import-cards',[CardController::class,'importCards'])->name('importCards');
     Route::get('/download-card-statement/{id}',[CardController::class,'downloadCardStatement']);
+    Route::post('/export-cards',[CardController::class,'exportCards'])->name('exportCards');
 
     Route::post('/credit-limit/{id}', [CardController::class, 'changeCardLimit'])->name('changeCardLimit');
     Route::post('/change-cardholder/{id}', [CardController::class, 'changeCardHolder'])->name('changeCardHolder');

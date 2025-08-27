@@ -6,6 +6,7 @@ use App\Imports\CardsImport;
 use App\Models\Card;
 use GuzzleHttp\Exception\ClientException;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CardsExport;
 use App\Models\CardStatement;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -284,5 +285,11 @@ class CardController extends Controller
     public function bin()
     {
         return view('client.bin');
+    }
+
+    public function exportCards(Request $request)
+    {
+        $ids = $request->input('cardId', []);
+        return Excel::download(new CardsExport($ids), 'wex_cards.xlsx');
     }
 }
