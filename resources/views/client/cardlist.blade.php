@@ -63,7 +63,7 @@ Expense Card
                 <tbody>
                     @if (count($cards) == 0)
                     <tr>
-                        <td colspan="6" class="text-center">NO RECORDS AVAILABLE</td>
+                        <td colspan="7" class="text-center">NO RECORDS AVAILABLE</td>
                     </tr>
                     @else
 
